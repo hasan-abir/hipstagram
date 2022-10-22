@@ -1,18 +1,10 @@
 const router = require("express")();
 const multerUpload = require("../image_handlers/multerUpload");
-
-// const verifyToken = require("../middlewares/verifyToken");
 const {
   registerUser,
   loginUser,
   getUserByUsername,
 } = require("../services/authService");
-
-// router.get("/currentuser", verifyToken, currentUser);
-
-// router.get("/allusers", allUsers);
-
-// router.get("/verifyuser", verifyToken, verifyUser);
 
 // Get user by username
 router.get("/user/:username", async (req, res, next) => {

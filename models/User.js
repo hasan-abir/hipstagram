@@ -4,48 +4,53 @@ const bcrypt = require("bcryptjs");
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
-  avatar: {
-    url: {
+const userSchema = new Schema(
+  {
+    avatar: {
+      url: {
+        type: String,
+      },
+      fileId: {
+        type: String,
+      },
+    },
+    username: {
       type: String,
+      unique: true,
+      required: [true, "Username is required"],
     },
-    fileId: {
+    gender: {
       type: String,
+      enum: {
+        values: ["male", "female", "other"],
+        message: "Must be 'male', 'female' or 'other'",
+      },
+      required: [true, "Gender required to be specified"],
     },
-  },
-  username: {
-    type: String,
-    unique: true,
-    required: [true, "Username is required"],
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ["male", "female", "other"],
-      message: "Must be 'male', 'female' or 'other'",
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      unique: true,
+      required: [true, "Email address is required"],
+      match: [
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        "Please provide a valid email.",
+      ],
     },
-    required: [true, "Gender required to be specified"],
-  },
-  email: {
-    type: String,
-    trim: true,
-    lowercase: true,
-    unique: true,
-    required: [true, "Email address is required"],
-    match: [
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-      "Please provide a valid email.",
+    password: {
+      type: String,
+      required: true,
+    },
+    uploadedImages: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Image",
+      },
     ],
   },
-  password: {
-    type: String,
-    required: true,
-  },
-  created: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  { timestamps: true }
+);
 
 userSchema.plugin(uniqueValidator, {
   message: "User with {PATH} already exists",
@@ -83,4 +88,4 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-module.exports = User = mongoose.model("user", userSchema);
+module.exports = User = mongoose.model("User", userSchema);

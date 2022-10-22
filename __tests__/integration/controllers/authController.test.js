@@ -8,10 +8,10 @@ const chaiHttp = require("chai-http");
 const { before, afterEach, after } = require("mocha");
 chai.use(chaiHttp);
 const dotenv = require("dotenv");
-const dbHandler = require("../db-handler");
-const app = require("../../server");
-const User = require("../../models/User");
-const imageKit = require("../../image_handlers/imageKit");
+const dbHandler = require("../../db-handler");
+const app = require("../../../server");
+const User = require("../../../models/User");
+const imageKit = require("../../../image_handlers/imageKit");
 
 describe("AuthController", () => {
   before(async () => {
@@ -23,7 +23,6 @@ describe("AuthController", () => {
   });
   after(async () => {
     await dbHandler.closeDatabase();
-    process.env.NODE_ENV = undefined;
   });
 
   describe("GET: /api/auth/user/:username", () => {
@@ -148,7 +147,7 @@ describe("AuthController", () => {
   });
   describe("POST: /api/auth/register", () => {
     it("should register the user", async function () {
-      this.timeout(4000);
+      this.timeout(20000);
 
       // given
       const reqBody = {
@@ -159,7 +158,7 @@ describe("AuthController", () => {
       };
 
       const reqFile = fs.readFileSync(
-        path.resolve(__dirname, "..", "test_images", "good-size.jpg")
+        path.resolve(__dirname, "..", "..", "test_images", "good-size.jpg")
       );
 
       // when
@@ -182,7 +181,7 @@ describe("AuthController", () => {
 
       await imageKit.deleteFile(savedUser.avatar.fileId);
     });
-    it("should return error when password has less than 8 chars", async function () {
+    it("should return error when password has less than 8 chars", async () => {
       // given
       const reqBody = {
         username: "Hasan Abir",
@@ -208,7 +207,7 @@ describe("AuthController", () => {
         "Password must be at least 8 characters long"
       );
     });
-    it("should register user with male gender", async function () {
+    it("should register user with male gender", async () => {
       // given
       const reqBody = {
         username: "Hasan Abir",
@@ -235,7 +234,7 @@ describe("AuthController", () => {
       expect(res.body.hasOwnProperty("token")).to.equal(true);
       expect(savedUser.avatar.fileId).to.equal("male");
     });
-    it("should register user with female gender", async function () {
+    it("should register user with female gender", async () => {
       // given
       const reqBody = {
         username: "Hasan Abir",
@@ -258,11 +257,13 @@ describe("AuthController", () => {
       const savedUser = await User.findOne({ email: reqBody.email });
 
       // then
+      if (!res.body.token) console.log(res.body);
+
       expect(res).to.have.status(200);
       expect(res.body.hasOwnProperty("token")).to.equal(true);
       expect(savedUser.avatar.fileId).to.equal("female");
     });
-    it("should register user with other gender", async function () {
+    it("should register user with other gender", async () => {
       // given
       const reqBody = {
         username: "Hasan Abir",
@@ -289,7 +290,7 @@ describe("AuthController", () => {
       expect(res.body.hasOwnProperty("token")).to.equal(true);
       expect(savedUser.avatar.fileId).to.equal("unknown");
     });
-    it("should return error when image size is too large", async function () {
+    it("should return error when image size is too large", async () => {
       // given
       const reqBody = {
         username: "Hasan Abir",
@@ -299,7 +300,7 @@ describe("AuthController", () => {
       };
 
       const reqFile = fs.readFileSync(
-        path.resolve(__dirname, "..", "test_images", "oversized.jpg")
+        path.resolve(__dirname, "..", "..", "test_images", "oversized.jpg")
       );
 
       // when
@@ -318,7 +319,7 @@ describe("AuthController", () => {
       expect(res).to.have.status(400);
       expect(res.body.msg).to.equal("Maximum file size of 2 MB is accepted");
     });
-    it("should return error when image format isn't correct", async function () {
+    it("should return error when image format isn't correct", async () => {
       // given
       const reqBody = {
         username: "Hasan Abir",
@@ -328,7 +329,7 @@ describe("AuthController", () => {
       };
 
       const reqFile = fs.readFileSync(
-        path.resolve(__dirname, "..", "test_images", "test.txt")
+        path.resolve(__dirname, "..", "..", "test_images", "test.txt")
       );
 
       // when

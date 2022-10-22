@@ -3,12 +3,12 @@ const expect = chai.expect;
 const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 const sinon = require("sinon");
-const { beforeEach, afterEach, before } = require("mocha");
-const authService = require("../../services/authService");
+const { beforeEach, afterEach } = require("mocha");
+const authService = require("../../../services/authService");
 const dotenv = require("dotenv");
-const User = require("../../models/User");
+const User = require("../../../models/User");
 const ImageKit = require("imagekit");
-const verifyAccessToken = require("../../jwt_utils").verifyAccessToken;
+const verifyAccessToken = require("../../../jwt_utils").verifyAccessToken;
 
 describe("AuthService", () => {
   beforeEach(() => {
@@ -123,7 +123,8 @@ describe("AuthService", () => {
       expect(result.avatar).to.equal(mockedUser.avatar);
       expect(result.gender).to.equal(mockedUser.gender);
       expect(result.email).to.equal(mockedUser.email);
-      expect(result.created).to.equal(mockedUser.created);
+      expect(result.createdAt).to.equal(mockedUser.createdAt);
+      expect(result.updatedAt).to.equal(mockedUser.updatedAt);
     });
     it("should throw when user not found", async () => {
       // given

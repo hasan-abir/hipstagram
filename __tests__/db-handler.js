@@ -12,7 +12,7 @@ const connect = async () => {
     useUnifiedTopology: true,
   };
 
-  mongoose.connect(uri, mongooseOpts);
+  await mongoose.connect(uri, mongooseOpts);
 
   return mongod;
 };
@@ -30,7 +30,7 @@ const clearDatabase = async () => {
 
   for (const key in collections) {
     const collection = collections[key];
-    collection.deleteMany();
+    await collection.deleteMany();
   }
 };
 

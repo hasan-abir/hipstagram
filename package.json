@@ -10,6 +10,8 @@
     "client": "npm run serve --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "mocha \"__tests__/**/*.test.js\"",
+    "unit-tests": "mocha \"__tests__/unit/**/*.test.js\"",
+    "integration-tests": "mocha \"__tests__/integration/**/*.test.js\"",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [],
