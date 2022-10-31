@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 
-const verifyAccessToken = (token) => {
+const jwtVerifyToken = (token) => {
   return jwt.verify(token, process.env.JWT_SECRET);
 };
 
-const generateAccessToken = (user) => {
+const jwtGenerateToken = (user) => {
   return jwt.sign(
     {
       username: user.username,
@@ -17,4 +17,4 @@ const generateAccessToken = (user) => {
   );
 };
 
-module.exports = { verifyAccessToken, generateAccessToken };
+module.exports = { jwtVerifyToken, jwtGenerateToken };

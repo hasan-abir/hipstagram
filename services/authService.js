@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const Image = require("../models/Image");
-const { generateAccessToken } = require("../jwt_utils");
+const { jwtGenerateToken } = require("../jwt_utils");
 const uploadImg = require("../image_handlers/uploadImg");
 const throwResponseError = require("../errors/throwResponseError");
 
@@ -134,7 +134,7 @@ const registerUser = async (requestBody, requestFile) => {
 
     await newUser.save();
 
-    return generateAccessToken(newUser);
+    return jwtGenerateToken(newUser);
   } catch (err) {
     throw err;
   }
@@ -152,7 +152,7 @@ const loginUser = async (requestBody) => {
 
     if (!isMatch) throwResponseError(401, "Invalid Credentials");
 
-    return generateAccessToken(foundUser);
+    return jwtGenerateToken(foundUser);
   } catch (err) {
     throw err;
   }

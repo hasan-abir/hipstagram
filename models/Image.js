@@ -20,10 +20,18 @@ const imageSchema = new Schema(
       type: String,
       default: "",
     },
-    // likes: {
-    //   type: Number,
-    //   required: true,
-    // },
+    likes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Like",
+      },
+    ],
+    comments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
   },
   { timestamps: true }
 );

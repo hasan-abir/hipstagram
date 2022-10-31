@@ -10,7 +10,7 @@ chai.use(chaiHttp);
 const dotenv = require("dotenv");
 const dbHandler = require("../../db-handler");
 const app = require("../../../server");
-const { generateAccessToken } = require("../../../jwt_utils");
+const { jwtGenerateToken } = require("../../../jwt_utils");
 const imageKit = require("../../../image_handlers/imageKit");
 const Image = require("../../../models/Image");
 const User = require("../../../models/User");
@@ -40,6 +40,57 @@ describe("ImagesController", () => {
     await dbHandler.closeDatabase();
   });
 
+  describe("GET: /api/images/details/:id", () => {
+    it("should get the image", async () => {
+      // given
+      const author = await User.findOne({ username: "Hasan Abir" });
+
+      let newImage = new Image({
+        file: { url: "url", fileId: "fileId" },
+        author,
+      });
+      newImage = await newImage.save();
+
+      // when
+      const res = await chai
+        .request(app)
+        .get("/api/images/details/" + newImage._id)
+        .set("x-api-key", process.env.API_KEY);
+
+      expect(res).to.have.status(200);
+      expect(res.body.file.fileId).to.equal(newImage.file.fileId);
+      expect(res.body.author.hasOwnProperty("username")).to.equal(true);
+      expect(
+        res.body.hasOwnProperty("likes") && res.body.hasOwnProperty("comments")
+      ).to.equal(false);
+    });
+    it("should return error when imageId is not ObjectId Type", async () => {
+      // given
+      const imageId = "123";
+
+      // when
+      const res = await chai
+        .request(app)
+        .get("/api/images/details/" + imageId)
+        .set("x-api-key", process.env.API_KEY);
+
+      expect(res).to.have.status(404);
+      expect(res.body.msg).to.equal("Image not found");
+    });
+    it("should return error when image is not found", async () => {
+      // given
+      const imageId = "6333f15d5472f567374519d4";
+
+      // when
+      const res = await chai
+        .request(app)
+        .get("/api/images/details/" + imageId)
+        .set("x-api-key", process.env.API_KEY);
+
+      expect(res).to.have.status(404);
+      expect(res.body.msg).to.equal("Image not found");
+    });
+  });
   describe("GET: /api/images/latest", () => {
     it("should get latest images", async () => {
       // given
@@ -98,17 +149,28 @@ describe("ImagesController", () => {
       expect(res.body.images[0].caption).to.equal(newImageB.caption);
       expect(res.body.images[1].caption).to.equal(newImageA.caption);
     });
+    it("should return empty images", async () => {
+      // when
+      const res = await chai
+        .request(app)
+        .get("/api/images/latest")
+        .set("x-api-key", process.env.API_KEY);
+
+      // then
+      expect(res).to.have.status(200);
+      expect(res.body.images).to.be.an("array").that.is.empty;
+      expect(res.body.next).to.equal(false);
+    });
   });
   describe("POST: /api/images/upload", () => {
     it("should upload the image", async function () {
       this.timeout(20000);
-
       // given
       const reqBody = { caption: "Lorem ipsum" };
       const reqFile = fs.readFileSync(
         path.resolve(__dirname, "..", "..", "test_images", "good-size.jpg")
       );
-      const token = await generateAccessToken({
+      const token = await jwtGenerateToken({
         username: "Hasan Abir",
         email: "hasanabir@test.com",
       });
@@ -134,10 +196,34 @@ describe("ImagesController", () => {
       expect(res.body.hasOwnProperty("caption")).to.equal(true);
       expect(res.body.hasOwnProperty("createdAt")).to.equal(true);
       expect(res.body.hasOwnProperty("updatedAt")).to.equal(true);
+      expect(
+        res.body.hasOwnProperty("likes") && res.body.hasOwnProperty("comments")
+      ).to.equal(false);
+
+      const imageUploaded = await Image.exists({ caption: reqBody.caption });
+      expect(imageUploaded.hasOwnProperty("_id")).to.equal(true);
 
       const savedImage = await Image.findById(res.body._id);
 
       await imageKit.deleteFile(savedImage.file.fileId);
+    });
+    it("should return error when image is not provided", async () => {
+      // given
+      const token = await jwtGenerateToken({
+        username: "Hasan Abir",
+        email: "hasanabir@test.com",
+      });
+
+      // when
+      const res = await chai
+        .request(app)
+        .post("/api/images/upload")
+        .set("x-api-key", process.env.API_KEY)
+        .set("authorization", "Bearer " + token);
+
+      // then
+      expect(res).to.have.status(400);
+      expect(res.body.msg).to.equal("Please select an image to upload.");
     });
     it("should return error when image size is too large", async () => {
       // given
@@ -145,7 +231,7 @@ describe("ImagesController", () => {
       const reqFile = fs.readFileSync(
         path.resolve(__dirname, "..", "..", "test_images", "oversized.jpg")
       );
-      const token = await generateAccessToken({
+      const token = await jwtGenerateToken({
         username: "Hasan Abir",
         email: "hasanabir@test.com",
       });
@@ -170,7 +256,7 @@ describe("ImagesController", () => {
       const reqFile = fs.readFileSync(
         path.resolve(__dirname, "..", "..", "test_images", "test.txt")
       );
-      const token = await generateAccessToken({
+      const token = await jwtGenerateToken({
         username: "Hasan Abir",
         email: "hasanabir@test.com",
       });
@@ -209,11 +295,12 @@ describe("ImagesController", () => {
       let newImage = new Image({
         file: { url, fileId },
         author,
+        caption: "Lorem ipsum",
       });
       await newImage.save();
       const imageId = newImage._id;
 
-      const token = await generateAccessToken({
+      const token = await jwtGenerateToken({
         username: "Hasan Abir",
         email: "hasanabir@test.com",
       });
@@ -229,12 +316,15 @@ describe("ImagesController", () => {
       // then
       expect(res).to.have.status(200);
       expect(res.body.msg).to.equal("Successfully deleted");
+
+      const imageUploaded = await Image.exists({ caption: newImage.caption });
+      expect(imageUploaded).to.be.null;
     });
     it("should return error when id is not ObjectId type", async () => {
       // given
       const imageId = "123";
 
-      const token = await generateAccessToken({
+      const token = await jwtGenerateToken({
         username: "Hasan Abir",
         email: "hasanabir@test.com",
       });
@@ -255,7 +345,7 @@ describe("ImagesController", () => {
       // given
       const imageId = "6333f15d5472f567374519d4";
 
-      const token = await generateAccessToken({
+      const token = await jwtGenerateToken({
         username: "Hasan Abir",
         email: "hasanabir@test.com",
       });
@@ -275,6 +365,17 @@ describe("ImagesController", () => {
     it("should return error when current user isn't the author", async () => {
       // given
       const author = await User.findOne({ username: "Hasan Abir" });
+      const currentUser = new User({
+        avatar: {
+          url: "https://ik.imagekit.io/ozjxi1bzek/hipstagram_users/male_ZkJR1ReV5.jpg",
+          fileId: "male",
+        },
+        username: "John Doe",
+        gender: "male",
+        email: "johndoe@test.com",
+        password: "testtest",
+      });
+      await currentUser.save();
       let newImage = new Image({
         file: { url: "url", fileId: "fileId" },
         author,
@@ -282,10 +383,7 @@ describe("ImagesController", () => {
       await newImage.save();
       const imageId = newImage._id;
 
-      const token = await generateAccessToken({
-        username: "John Doe",
-        email: "hasanabir@test.com",
-      });
+      const token = await jwtGenerateToken(currentUser);
 
       // when
       const res = await chai
@@ -312,7 +410,7 @@ describe("ImagesController", () => {
       await newImage.save();
       const imageId = newImage._id;
 
-      const token = await generateAccessToken({
+      const token = await jwtGenerateToken({
         username: "Hasan Abir",
         email: "hasanabir@test.com",
       });
@@ -328,13 +426,16 @@ describe("ImagesController", () => {
       // then
       expect(res).to.have.status(200);
       expect(res.body.caption).to.equal(reqBody.caption);
+      expect(
+        res.body.hasOwnProperty("likes") && res.body.hasOwnProperty("comments")
+      ).to.equal(false);
     });
     it("should return error when id is not ObjectId type", async () => {
       // given
       const reqBody = { caption: "Lorem Ipsum" };
       const imageId = "123";
 
-      const token = await generateAccessToken({
+      const token = await jwtGenerateToken({
         username: "Hasan Abir",
         email: "hasanabir@test.com",
       });
@@ -356,7 +457,7 @@ describe("ImagesController", () => {
       const reqBody = { caption: "Lorem Ipsum" };
       const imageId = "6333f15d5472f567374519d4";
 
-      const token = await generateAccessToken({
+      const token = await jwtGenerateToken({
         username: "Hasan Abir",
         email: "hasanabir@test.com",
       });
@@ -377,6 +478,17 @@ describe("ImagesController", () => {
       // given
       const reqBody = { caption: "Lorem Ipsum" };
       const author = await User.findOne({ username: "Hasan Abir" });
+      const currentUser = new User({
+        avatar: {
+          url: "https://ik.imagekit.io/ozjxi1bzek/hipstagram_users/male_ZkJR1ReV5.jpg",
+          fileId: "male",
+        },
+        username: "John Doe",
+        gender: "male",
+        email: "johndoe@test.com",
+        password: "testtest",
+      });
+      await currentUser.save();
       let newImage = new Image({
         file: { url: "url", fileId: "fileId" },
         author,
@@ -384,10 +496,7 @@ describe("ImagesController", () => {
       await newImage.save();
       const imageId = newImage._id;
 
-      const token = await generateAccessToken({
-        username: "John Doe",
-        email: "hasanabir@test.com",
-      });
+      const token = await jwtGenerateToken(currentUser);
 
       // when
       const res = await chai

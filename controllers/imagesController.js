@@ -1,15 +1,12 @@
 const router = require("express")();
-// const User = require("../models/User");
-// const Image = require("../models/Image");
-// const Like = require("../models/Like");
-// const Comment = require("../models/Comment");
-const verifyToken = require("../middlewares/verifyToken");
+const { verifyTokenMiddleware } = require("../middlewares/verifyToken");
 const multerUpload = require("../image_handlers/multerUpload");
 const {
   getLatestImages,
   uploadImage,
   removeImage,
   updateImage,
+  getSingleImage,
 } = require("../services/imageService");
 
 // Get all latest images (paginated)
@@ -25,10 +22,20 @@ router.get("/latest", async (req, res, next) => {
   }
 });
 
+// Get single image
+router.get("/details/:id", async (req, res, next) => {
+  try {
+    const image = await getSingleImage(req.params.id);
+    res.json(image);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Upload image
 router.post(
   "/upload",
-  verifyToken,
+  verifyTokenMiddleware,
   multerUpload.single("file"),
   async (req, res, next) => {
     try {
@@ -42,7 +49,7 @@ router.post(
 );
 
 // Remove image
-router.delete("/remove/:id", verifyToken, async (req, res, next) => {
+router.delete("/remove/:id", verifyTokenMiddleware, async (req, res, next) => {
   try {
     await removeImage(req.params.id, req.username);
 
@@ -53,7 +60,7 @@ router.delete("/remove/:id", verifyToken, async (req, res, next) => {
 });
 
 // Update image
-router.put("/edit/:id", verifyToken, async (req, res, next) => {
+router.put("/edit/:id", verifyTokenMiddleware, async (req, res, next) => {
   try {
     const updatedImage = await updateImage(
       req.body,

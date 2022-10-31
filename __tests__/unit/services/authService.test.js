@@ -8,7 +8,7 @@ const authService = require("../../../services/authService");
 const dotenv = require("dotenv");
 const User = require("../../../models/User");
 const ImageKit = require("imagekit");
-const verifyAccessToken = require("../../../jwt_utils").verifyAccessToken;
+const jwtVerifyToken = require("../../../jwt_utils").jwtVerifyToken;
 
 describe("AuthService", () => {
   beforeEach(() => {
@@ -42,7 +42,7 @@ describe("AuthService", () => {
       // when
       const result = await authService.loginUser(requestBody);
 
-      const verified = await verifyAccessToken(result);
+      const verified = await jwtVerifyToken(result);
 
       // then
       expect(verified.username).to.equal(mockedUser.username);
@@ -167,7 +167,7 @@ describe("AuthService", () => {
       // when
       const result = await authService.registerUser(requestBody, requestFile);
 
-      const verified = await verifyAccessToken(result);
+      const verified = await jwtVerifyToken(result);
 
       // then
       expect(verified.username).to.equal(requestBody.username);

@@ -350,5 +350,77 @@ describe("AuthController", () => {
         "Only .jpg or .png file types are accepted"
       );
     });
+    it("should return error if the username is already registered", async function () {
+      // given
+      const demoUser = new User({
+        avatar: {
+          url: "https://ik.imagekit.io/ozjxi1bzek/hipstagram_users/male_ZkJR1ReV5.jpg",
+          fileId: "male",
+        },
+        username: "Hasan Abir",
+        gender: "male",
+        email: "hasanabir@test.com",
+        password: "testtest",
+      });
+      await demoUser.save();
+
+      const reqBody = {
+        username: demoUser.username,
+        gender: "male",
+        email: "hasan@test.com",
+        password: "testtest",
+      };
+
+      // when
+      const res = await chai
+        .request(app)
+        .post("/api/auth/register")
+        .set("x-api-key", process.env.API_KEY)
+        .set("content-type", "multipart/form-data")
+        .field("username", reqBody.username)
+        .field("gender", reqBody.gender)
+        .field("email", reqBody.email)
+        .field("password", reqBody.password);
+
+      // then
+      expect(res).to.have.status(400);
+      expect(res.body.username).to.equal("User with username already exists");
+    });
+    it("should return error if the email is already registered", async function () {
+      // given
+      const demoUser = new User({
+        avatar: {
+          url: "https://ik.imagekit.io/ozjxi1bzek/hipstagram_users/male_ZkJR1ReV5.jpg",
+          fileId: "male",
+        },
+        username: "Hasan Abir",
+        gender: "male",
+        email: "hasanabir@test.com",
+        password: "testtest",
+      });
+      await demoUser.save();
+
+      const reqBody = {
+        username: "Hasan",
+        gender: "male",
+        email: demoUser.email,
+        password: "testtest",
+      };
+
+      // when
+      const res = await chai
+        .request(app)
+        .post("/api/auth/register")
+        .set("x-api-key", process.env.API_KEY)
+        .set("content-type", "multipart/form-data")
+        .field("username", reqBody.username)
+        .field("gender", reqBody.gender)
+        .field("email", reqBody.email)
+        .field("password", reqBody.password);
+
+      // then
+      expect(res).to.have.status(400);
+      expect(res.body.email).to.equal("User with email already exists");
+    });
   });
 });

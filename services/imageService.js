@@ -16,9 +16,27 @@ const getLatestImages = async (limit = 10, lastItemTimestamp) => {
       .sort("-updatedAt")
       .limit(limit)
       .select("file caption updatedAt");
-    const next = images[images.length - 1].updatedAt;
+    const next =
+      images.length > 0 ? images[images.length - 1].updatedAt : false;
 
     return { images, next };
+  } catch (err) {
+    throw err;
+  }
+};
+
+const getSingleImage = async (imageId) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(imageId))
+      throwResponseError(404, "Image not found");
+
+    const foundImage = await Image.findById(imageId)
+      .populate("author", "avatar username -_id")
+      .select("-likes -comments");
+
+    if (!foundImage) throwResponseError(404, "Image not found");
+
+    return foundImage;
   } catch (err) {
     throw err;
   }
@@ -33,8 +51,6 @@ const uploadImage = async (reqBody, reqFile, username) => {
     if (!reqFile) throwResponseError(400, "Please select an image to upload.");
 
     const author = await User.findOne({ username });
-
-    if (!author) throwResponseError(404, "User doesn't exist");
 
     const response = await imageKit.upload({
       file: reqFile.buffer.toString("base64"),
@@ -55,7 +71,17 @@ const uploadImage = async (reqBody, reqFile, username) => {
 
     await newImage.save();
 
-    return await newImage.populate("author", "avatar username -_id");
+    let populatedImage = await newImage.populate(
+      "author",
+      "avatar username -_id"
+    );
+
+    populatedImage = populatedImage.toObject();
+
+    delete populatedImage.likes;
+    delete populatedImage.comments;
+
+    return populatedImage;
   } catch (err) {
     throw err;
   }
@@ -68,7 +94,7 @@ const removeImage = async (imageId, username) => {
 
     const foundImage = await Image.findById(imageId).populate(
       "author",
-      "avatar username -_id"
+      "username -_id"
     );
 
     if (!foundImage) throwResponseError(404, "Image not found");
@@ -90,10 +116,9 @@ const updateImage = async (reqBody, imageId, username) => {
     if (!mongoose.Types.ObjectId.isValid(imageId))
       throwResponseError(404, "Image not found");
 
-    let foundImage = await Image.findById(imageId).populate(
-      "author",
-      "avatar username -_id"
-    );
+    let foundImage = await Image.findById(imageId)
+      .populate("author", "avatar username -_id")
+      .select("-likes -comments");
 
     if (!foundImage) throwResponseError(404, "Image not found");
 
@@ -112,6 +137,7 @@ const updateImage = async (reqBody, imageId, username) => {
 
 module.exports = {
   getLatestImages,
+  getSingleImage,
   uploadImage,
   removeImage,
   updateImage,

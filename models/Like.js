@@ -2,15 +2,18 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const likeSchema = new Schema({
-  userId: {
-    type: String,
-    required: true,
+const likeSchema = new Schema(
+  {
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    image: {
+      type: Schema.Types.ObjectId,
+      ref: "Image",
+    },
   },
-  imageId: {
-    type: String,
-    required: true,
-  },
-});
+  { timestamps: true }
+);
 
 module.exports = Like = mongoose.model("like", likeSchema);

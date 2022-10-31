@@ -37,7 +37,9 @@ describe("ImageService", () => {
       const imageSave = sinon.stub(Image.prototype, "save");
       const imagePopulateUser = sinon
         .stub(Image.prototype, "populate")
-        .returns(Promise.resolve(null));
+        .returns(
+          Promise.resolve({ toObject: () => ({ likes: [], comments: [] }) })
+        );
 
       // when
       await imageService.uploadImage(reqBody, reqFile, username);
@@ -57,23 +59,6 @@ describe("ImageService", () => {
       await expect(
         imageService.uploadImage(reqBody, null, username)
       ).to.be.rejectedWith("Please select an image to upload.");
-    });
-
-    it("should return error when user not found", async () => {
-      // given
-      const reqBody = { caption: "Lorem ipsum" };
-      const reqFile = {
-        fileName: "example.jpg",
-        buffer: { toString: () => {} },
-      };
-      const username = "Hasan Abir";
-
-      sinon.stub(User, "findOne").returns(null);
-
-      // then
-      await expect(
-        imageService.uploadImage(reqBody, reqFile, username)
-      ).to.be.rejectedWith("User doesn't exist");
     });
   });
   describe("#removeImage()", () => {
@@ -100,10 +85,7 @@ describe("ImageService", () => {
       // then
       expect(imagePopulateUser.calledWith(imageId)).to.equal(true);
       expect(
-        imagePopulateUser().populate.calledWith(
-          "author",
-          "avatar username -_id"
-        )
+        imagePopulateUser().populate.calledWith("author", "username -_id")
       ).to.equal(true);
       expect(imageKitDelete.calledWith(mockedImage.file.fileId)).to.equal(true);
       expect(imageDelete.calledOnce).to.equal(true);
@@ -161,7 +143,8 @@ describe("ImageService", () => {
       const username = "Hasan Abir";
 
       const imagePopulateUser = sinon.stub(Image, "findById").returns({
-        populate: sinon.stub().returns(
+        populate: sinon.stub().returnsThis(),
+        select: sinon.stub().returns(
           Promise.resolve(
             new Image({
               file: { fileId: "fileId" },
@@ -187,6 +170,9 @@ describe("ImageService", () => {
           "avatar username -_id"
         )
       ).to.equal(true);
+      expect(
+        imagePopulateUser().populate().select.calledWith("-likes -comments")
+      ).to.equal(true);
       expect(imageSave.calledOnce).to.equal(true);
     });
     it("should return error when id is not ObjectId type", async () => {
@@ -207,7 +193,8 @@ describe("ImageService", () => {
       const username = "Hasan Abir";
 
       sinon.stub(Image, "findById").returns({
-        populate: sinon.stub().returns(Promise.resolve(null)),
+        populate: sinon.stub().returnsThis(),
+        select: sinon.stub().returns(Promise.resolve(null)),
       });
 
       // then
@@ -222,7 +209,8 @@ describe("ImageService", () => {
       const username = "Hasan Abir";
 
       sinon.stub(Image, "findById").returns({
-        populate: sinon
+        populate: sinon.stub().returnsThis(),
+        select: sinon
           .stub()
           .returns(
             Promise.resolve(
@@ -298,6 +286,58 @@ describe("ImageService", () => {
       expect(
         imagesFind().sort().limit().select.calledWith("file caption updatedAt")
       ).to.equal(true);
+    });
+  });
+  describe("#getSingleImage()", () => {
+    it("should get the image", async () => {
+      // given
+      const mockedImage = new Image({
+        file: { fileId: "fileId" },
+        author: new User({ username: "Hasan Abir" }),
+      });
+      const imageFindAndPopulate = sinon.stub(Image, "findById").returns({
+        populate: sinon.stub().returnsThis(),
+        select: sinon.stub().returns(Promise.resolve(mockedImage)),
+      });
+
+      // when
+      const result = await imageService.getSingleImage(mockedImage._id);
+
+      // then
+      expect(result.file.fileId).to.equal(mockedImage.file.fileId);
+      expect(imageFindAndPopulate.calledWith(mockedImage._id)).to.equal(true);
+      expect(
+        imageFindAndPopulate().populate.calledWith(
+          "author",
+          "avatar username -_id"
+        )
+      ).to.equal(true);
+      expect(
+        imageFindAndPopulate().populate().select.calledWith("-likes -comments")
+      ).to.equal(true);
+    });
+    it("should return error when id is not ObjectId type", async () => {
+      // given
+      const imageId = "123";
+
+      // then
+      await expect(imageService.getSingleImage(imageId)).to.be.rejectedWith(
+        "Image not found"
+      );
+    });
+    it("should return error when image not found", async () => {
+      // given
+      const imageId = "6333f15d5472f567374519d4";
+
+      sinon.stub(Image, "findById").returns({
+        populate: sinon.stub().returnsThis(),
+        select: sinon.stub().returns(Promise.resolve(null)),
+      });
+
+      // then
+      await expect(imageService.getSingleImage(imageId)).to.be.rejectedWith(
+        "Image not found"
+      );
     });
   });
 });
