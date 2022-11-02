@@ -33,7 +33,7 @@ describe("ImageService", () => {
         email: "hasanabir@test.com",
         password: "testtest",
       });
-      const getUserByEmail = sinon.stub(User, "findOne").returns(mockedUser);
+      const getUserByUsername = sinon.stub(User, "findOne").returns(mockedUser);
       const imageSave = sinon.stub(Image.prototype, "save");
       const imagePopulateUser = sinon
         .stub(Image.prototype, "populate")
@@ -46,9 +46,11 @@ describe("ImageService", () => {
 
       // then
       expect(imagekitUpload.calledOnce).to.equal(true);
-      expect(getUserByEmail.calledWith({ username })).to.equal(true);
+      expect(getUserByUsername.calledWith({ username })).to.equal(true);
       expect(imageSave.calledOnce).to.equal(true);
-      expect(imagePopulateUser.calledOnce).to.equal(true);
+      expect(
+        imagePopulateUser.calledWith("author", "avatar username -_id")
+      ).to.equal(true);
     });
     it("should return error when no image provided", async () => {
       // given
@@ -171,7 +173,9 @@ describe("ImageService", () => {
         )
       ).to.equal(true);
       expect(
-        imagePopulateUser().populate().select.calledWith("-likes -comments")
+        imagePopulateUser()
+          .populate()
+          .select.calledWith("-likes -comments -__v")
       ).to.equal(true);
       expect(imageSave.calledOnce).to.equal(true);
     });
@@ -313,7 +317,9 @@ describe("ImageService", () => {
         )
       ).to.equal(true);
       expect(
-        imageFindAndPopulate().populate().select.calledWith("-likes -comments")
+        imageFindAndPopulate()
+          .populate()
+          .select.calledWith("-likes -comments -__v")
       ).to.equal(true);
     });
     it("should return error when id is not ObjectId type", async () => {

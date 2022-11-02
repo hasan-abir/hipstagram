@@ -80,7 +80,9 @@ const verifyUser = async (req, res) => {
 
 const getUserByUsername = async (username) => {
   try {
-    const user = await User.findOne({ username }).select("-password -_id -__v");
+    const user = await User.findOne({ username }).select(
+      "-password -_id -__v -uploadedImages"
+    );
 
     if (!user) throwResponseError(404, "User doesn't exist");
 

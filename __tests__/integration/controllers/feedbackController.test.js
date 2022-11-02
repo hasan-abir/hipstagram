@@ -321,7 +321,9 @@ describe("FeedbackController", () => {
       expect(res).to.have.status(200);
       expect(res.body.text).to.equal(reqBody.text);
       expect(res.body.author.username).to.equal(user.username);
-      expect(res.body.author.hasOwnProperty("avatar")).to.equal(true);
+      expect(res.body.author.avatar.fileId).to.equal(user.avatar.fileId);
+      expect(res.body.author.hasOwnProperty("_id")).to.equal(false);
+      expect(res.body.hasOwnProperty("image")).to.equal(false);
 
       const commentPosted = await Comment.exists({
         image: image._id,
@@ -464,10 +466,10 @@ describe("FeedbackController", () => {
       // given
       const limit = 2;
       const image = await Image.findOne({ caption: "example" });
-      const author = await User.exists({ username: "Hasan Abir" });
+      const author = await User.findOne({ username: "Hasan Abir" });
 
       const commentBody = {
-        author: author._id,
+        author,
         image,
       };
 
@@ -491,6 +493,12 @@ describe("FeedbackController", () => {
       expect(res.body.next).to.equal(newCommentC.updatedAt.toISOString());
       expect(res.body.comments[0].text).to.equal(newCommentD.text);
       expect(res.body.comments[1].text).to.equal(newCommentC.text);
+      expect(res.body.comments[0].author.username).to.equal(author.username);
+      expect(res.body.comments[0].author.avatar.fileId).to.equal(
+        author.avatar.fileId
+      );
+      expect(res.body.comments[0].author.hasOwnProperty("_id")).to.equal(false);
+      expect(res.body.comments[0].hasOwnProperty("image")).to.equal(false);
     });
     it("should return empty comments", async () => {
       // given
@@ -510,10 +518,10 @@ describe("FeedbackController", () => {
       // given
       const limit = 2;
       const image = await Image.findOne({ caption: "example" });
-      const author = await User.exists({ username: "Hasan Abir" });
+      const author = await User.findOne({ username: "Hasan Abir" });
 
       const commentBody = {
-        author: author._id,
+        author,
         image,
       };
 
@@ -538,6 +546,12 @@ describe("FeedbackController", () => {
       expect(res.body.next).to.equal(newCommentA.updatedAt.toISOString());
       expect(res.body.comments[0].text).to.equal(newCommentB.text);
       expect(res.body.comments[1].text).to.equal(newCommentA.text);
+      expect(res.body.comments[0].author.username).to.equal(author.username);
+      expect(res.body.comments[0].author.avatar.fileId).to.equal(
+        author.avatar.fileId
+      );
+      expect(res.body.comments[0].author.hasOwnProperty("_id")).to.equal(false);
+      expect(res.body.comments[0].hasOwnProperty("image")).to.equal(false);
     });
     it("should return error when imageId is not ObjectIdType", async () => {
       // given

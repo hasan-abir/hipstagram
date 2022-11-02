@@ -58,10 +58,17 @@ describe("ImagesController", () => {
         .set("x-api-key", process.env.API_KEY);
 
       expect(res).to.have.status(200);
+      expect(res.body.file.url).to.equal(newImage.file.url);
       expect(res.body.file.fileId).to.equal(newImage.file.fileId);
-      expect(res.body.author.hasOwnProperty("username")).to.equal(true);
+      expect(res.body.caption).to.equal(newImage.caption);
+      expect(res.body.author.username).to.equal(author.username);
+      expect(res.body.author.avatar.fileId).to.equal(author.avatar.fileId);
+      expect(res.body.author.avatar.url).to.equal(author.avatar.url);
+      expect(res.body.author.hasOwnProperty("_id")).to.equal(false);
       expect(
-        res.body.hasOwnProperty("likes") && res.body.hasOwnProperty("comments")
+        res.body.hasOwnProperty("likes") &&
+          res.body.hasOwnProperty("comments") &&
+          res.body.hasOwnProperty("__v")
       ).to.equal(false);
     });
     it("should return error when imageId is not ObjectId Type", async () => {
@@ -119,6 +126,8 @@ describe("ImagesController", () => {
       expect(res.body.next).to.equal(newImageC.updatedAt.toISOString());
       expect(res.body.images[0].caption).to.equal(newImageD.caption);
       expect(res.body.images[1].caption).to.equal(newImageC.caption);
+      expect(res.body.images[0].file.fileId).to.equal(imageBody.file.fileId);
+      expect(res.body.images[0].file.url).to.equal(imageBody.file.url);
     });
     it("should get next batch of images", async () => {
       // given
@@ -148,6 +157,8 @@ describe("ImagesController", () => {
       expect(res.body.next).to.equal(newImageA.updatedAt.toISOString());
       expect(res.body.images[0].caption).to.equal(newImageB.caption);
       expect(res.body.images[1].caption).to.equal(newImageA.caption);
+      expect(res.body.images[0].file.fileId).to.equal(imageBody.file.fileId);
+      expect(res.body.images[0].file.url).to.equal(imageBody.file.url);
     });
     it("should return empty images", async () => {
       // when
@@ -188,16 +199,16 @@ describe("ImagesController", () => {
       // then
       expect(res).to.have.status(200);
       expect(res.body.hasOwnProperty("_id")).to.equal(true);
-      expect(res.body.hasOwnProperty("file")).to.equal(true);
       expect(res.body.file.hasOwnProperty("fileId")).to.equal(true);
       expect(res.body.file.hasOwnProperty("url")).to.equal(true);
-      expect(res.body.hasOwnProperty("author")).to.equal(true);
       expect(res.body.author.hasOwnProperty("username")).to.equal(true);
-      expect(res.body.hasOwnProperty("caption")).to.equal(true);
-      expect(res.body.hasOwnProperty("createdAt")).to.equal(true);
-      expect(res.body.hasOwnProperty("updatedAt")).to.equal(true);
+      expect(res.body.author.hasOwnProperty("avatar")).to.equal(true);
+      expect(res.body.author.hasOwnProperty("_id")).to.equal(false);
+      expect(res.body.caption).to.equal(reqBody.caption);
       expect(
-        res.body.hasOwnProperty("likes") && res.body.hasOwnProperty("comments")
+        res.body.hasOwnProperty("likes") &&
+          res.body.hasOwnProperty("comments") &&
+          res.body.hasOwnProperty("_v")
       ).to.equal(false);
 
       const imageUploaded = await Image.exists({ caption: reqBody.caption });
@@ -425,9 +436,17 @@ describe("ImagesController", () => {
 
       // then
       expect(res).to.have.status(200);
+      expect(res.body.file.fileId).to.equal(newImage.file.fileId);
+      expect(res.body.file.url).to.equal(newImage.file.url);
+      expect(res.body.author.username).to.equal(author.username);
+      expect(res.body.author.avatar.fileId).to.equal(author.avatar.fileId);
+      expect(res.body.author.avatar.url).to.equal(author.avatar.url);
+      expect(res.body.author.hasOwnProperty("_id")).to.equal(false);
       expect(res.body.caption).to.equal(reqBody.caption);
       expect(
-        res.body.hasOwnProperty("likes") && res.body.hasOwnProperty("comments")
+        res.body.hasOwnProperty("likes") &&
+          res.body.hasOwnProperty("comments") &&
+          res.body.hasOwnProperty("__v")
       ).to.equal(false);
     });
     it("should return error when id is not ObjectId type", async () => {

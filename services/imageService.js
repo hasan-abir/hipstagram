@@ -32,7 +32,7 @@ const getSingleImage = async (imageId) => {
 
     const foundImage = await Image.findById(imageId)
       .populate("author", "avatar username -_id")
-      .select("-likes -comments");
+      .select("-likes -comments -__v");
 
     if (!foundImage) throwResponseError(404, "Image not found");
 
@@ -80,6 +80,7 @@ const uploadImage = async (reqBody, reqFile, username) => {
 
     delete populatedImage.likes;
     delete populatedImage.comments;
+    delete populatedImage._v;
 
     return populatedImage;
   } catch (err) {
@@ -118,7 +119,7 @@ const updateImage = async (reqBody, imageId, username) => {
 
     let foundImage = await Image.findById(imageId)
       .populate("author", "avatar username -_id")
-      .select("-likes -comments");
+      .select("-likes -comments -__v");
 
     if (!foundImage) throwResponseError(404, "Image not found");
 

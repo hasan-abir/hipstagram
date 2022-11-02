@@ -103,6 +103,7 @@ describe("AuthService", () => {
 
       delete mockedUser._id;
       delete mockedUser._v;
+      delete mockedUser.uploadedImages;
 
       const userFindOne = sinon.stub(User, "findOne").returns({
         select: sinon.stub().returns(Promise.resolve(mockedUser)),
@@ -113,12 +114,13 @@ describe("AuthService", () => {
 
       // then
       expect(userFindOne.calledWith({ username })).to.equal(true);
-      expect(userFindOne().select.calledWith("-password -_id -__v")).to.equal(
-        true
-      );
+      expect(
+        userFindOne().select.calledWith("-password -_id -__v -uploadedImages")
+      ).to.equal(true);
       expect(result.password).to.equal(undefined);
       expect(result._id).to.equal(undefined);
       expect(result._v).to.equal(undefined);
+      expect(result.uploadedImages).to.equal(undefined);
       expect(result.username).to.equal(mockedUser.username);
       expect(result.avatar).to.equal(mockedUser.avatar);
       expect(result.gender).to.equal(mockedUser.gender);

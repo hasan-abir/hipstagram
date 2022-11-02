@@ -50,6 +50,15 @@ describe("AuthController", () => {
         .set("x-api-key", process.env.API_KEY);
 
       expect(res).to.have.status(200);
+      expect(res.body.avatar.url).to.equal(demoUser.avatar.url);
+      expect(res.body.avatar.fileId).to.equal(demoUser.avatar.fileId);
+      expect(res.body.username).to.equal(demoUser.username);
+      expect(res.body.gender).to.equal(demoUser.gender);
+      expect(res.body.email).to.equal(demoUser.email);
+      expect(res.body.hasOwnProperty("password")).to.equal(false);
+      expect(res.body.hasOwnProperty("_id")).to.equal(false);
+      expect(res.body.hasOwnProperty("__v")).to.equal(false);
+      expect(res.body.hasOwnProperty("uploadedImages")).to.equal(false);
     });
     it("should return error when the user doesn't exist", async () => {
       // given
