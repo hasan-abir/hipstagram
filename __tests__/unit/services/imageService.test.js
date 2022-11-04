@@ -291,6 +291,48 @@ describe("ImageService", () => {
         imagesFind().sort().limit().select.calledWith("file caption updatedAt")
       ).to.equal(true);
     });
+    it("should get the images of username", async () => {
+      // given
+      const limit = 5;
+      const username = "Hasan Abir";
+
+      const images = [
+        { updatedAt: "2022-10-20T06:25:45.115Z" },
+        { updatedAt: "2022-10-21T06:25:45.115Z" },
+      ];
+      const mockUser = new User({ username });
+      const userExists = sinon
+        .stub(User, "exists")
+        .returns(Promise.resolve(mockUser));
+      const imagesFind = sinon.stub(Image, "find").returns({
+        sort: sinon.stub().returns({
+          limit: sinon.stub().returns({
+            select: sinon.stub().returns(Promise.resolve(images)),
+          }),
+        }),
+      });
+
+      // when
+      const result = await imageService.getLatestImages(limit, null, username);
+
+      // then
+      expect(result.next).to.equal(images[1].updatedAt);
+      expect(
+        userExists.calledWith({
+          username,
+        })
+      ).to.equal(true);
+      expect(
+        imagesFind.calledWith({
+          author: mockUser._id,
+        })
+      ).to.equal(true);
+      expect(imagesFind().sort.calledWith("-updatedAt")).to.equal(true);
+      expect(imagesFind().sort().limit.calledWith(limit)).to.equal(true);
+      expect(
+        imagesFind().sort().limit().select.calledWith("file caption updatedAt")
+      ).to.equal(true);
+    });
   });
   describe("#getSingleImage()", () => {
     it("should get the image", async () => {

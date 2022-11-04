@@ -160,6 +160,51 @@ describe("ImagesController", () => {
       expect(res.body.images[0].file.fileId).to.equal(imageBody.file.fileId);
       expect(res.body.images[0].file.url).to.equal(imageBody.file.url);
     });
+    it("should get images by username", async () => {
+      // given
+      const limit = 2;
+      const author = await User.findOne({ username: "Hasan Abir" });
+      const secondAuthor = new User({
+        avatar: {
+          url: "https://ik.imagekit.io/ozjxi1bzek/hipstagram_users/male_ZkJR1ReV5.jpg",
+          fileId: "male",
+        },
+        username: "John Doe",
+        gender: "male",
+        email: "johndoe@test.com",
+        password: "testtest",
+      });
+      await secondAuthor.save();
+
+      const imageBody = {
+        file: { url: "url", fileId: "fileId" },
+      };
+      imageBody.author = author;
+      let newImageA = new Image({ ...imageBody, caption: "A" });
+      let newImageB = new Image({ ...imageBody, caption: "B" });
+      imageBody.author = secondAuthor;
+      let newImageC = new Image({ ...imageBody, caption: "C" });
+      let newImageD = new Image({ ...imageBody, caption: "D" });
+      newImageA = await newImageA.save();
+      newImageB = await newImageB.save();
+      newImageC = await newImageC.save();
+      newImageD = await newImageD.save();
+
+      // when
+      const res = await chai
+        .request(app)
+        .get("/api/images/latest")
+        .query({ limit, username: author.username })
+        .set("x-api-key", process.env.API_KEY);
+
+      // then
+      expect(res).to.have.status(200);
+      expect(res.body.next).to.equal(newImageA.updatedAt.toISOString());
+      expect(res.body.images[0].caption).to.equal(newImageB.caption);
+      expect(res.body.images[1].caption).to.equal(newImageA.caption);
+      expect(res.body.images[0].file.fileId).to.equal(imageBody.file.fileId);
+      expect(res.body.images[0].file.url).to.equal(imageBody.file.url);
+    });
     it("should return empty images", async () => {
       // when
       const res = await chai

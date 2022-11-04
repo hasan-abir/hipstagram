@@ -6,7 +6,7 @@ const commentSchema = new Schema(
   {
     text: {
       type: String,
-      required: true,
+      required: [true, "Text is required"],
     },
     author: {
       type: Schema.Types.ObjectId,
@@ -20,4 +20,4 @@ const commentSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = Comment = mongoose.model("comment", commentSchema);
+module.exports = Comment = mongoose.model("Comment", commentSchema);

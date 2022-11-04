@@ -1,82 +1,7 @@
 const User = require("../models/User");
-const Image = require("../models/Image");
 const { jwtGenerateToken } = require("../jwt_utils");
 const uploadImg = require("../image_handlers/uploadImg");
 const throwResponseError = require("../errors/throwResponseError");
-
-const currentUser = async (req, res) => {
-  try {
-    let images = [];
-    const userDocs = await User.find();
-
-    const imageDocs = await Image.find({ userId: req.userId });
-
-    images = imageDocs.map((image) => {
-      const author = userDocs.filter((user) => user._id == image.userId)[0];
-
-      return {
-        _id: image._id,
-        image: image.image,
-        description: image.description,
-        likes: image.likes,
-        userId: image.userId,
-        username: author.username,
-        created: image.created,
-      };
-    });
-
-    res.json(images);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "Something went wrong" });
-  }
-};
-
-const allUsers = async (req, res) => {
-  try {
-    let images = [];
-    const userDocs = await User.find();
-
-    const imageDocs = await Image.find();
-
-    images = imageDocs.map((image) => {
-      const author = userDocs.filter((user) => user._id == image.userId)[0];
-
-      return {
-        _id: image._id,
-        image: image.image,
-        description: image.description,
-        likes: image.likes,
-        userId: image.userId,
-        username: author.username,
-        created: image.created,
-      };
-    });
-
-    res.json({
-      users: userDocs,
-      images,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "Something went wrong" });
-  }
-};
-
-const verifyUser = async (req, res) => {
-  try {
-    const foundUser = await User.findOne({ _id: req.userId });
-
-    res.json({
-      id: foundUser._id,
-      username: foundUser.username,
-      avatar: foundUser.avatar,
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ msg: "Something went wrong" });
-  }
-};
 
 const getUserByUsername = async (username) => {
   try {
@@ -161,9 +86,6 @@ const loginUser = async (requestBody) => {
 };
 
 module.exports = {
-  currentUser,
-  allUsers,
-  verifyUser,
   getUserByUsername,
   registerUser,
   loginUser,

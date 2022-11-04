@@ -4,13 +4,27 @@ const User = require("../models/User");
 const Image = require("../models/Image");
 const throwResponseError = require("../errors/throwResponseError");
 
-const getLatestImages = async (limit = 10, lastItemTimestamp) => {
+const getLatestImages = async (limit = 10, lastItemTimestamp, username) => {
   try {
-    const query = lastItemTimestamp
-      ? {
-          updatedAt: { $lt: lastItemTimestamp },
-        }
-      : null;
+    let authorId = null;
+
+    if (username) {
+      const author = await User.exists({ username });
+
+      if (author) {
+        authorId = author._id;
+      }
+    }
+
+    const query = {};
+
+    if (lastItemTimestamp) {
+      query.updatedAt = { $lt: lastItemTimestamp };
+    }
+
+    if (authorId) {
+      query.author = authorId;
+    }
 
     const images = await Image.find(query)
       .sort("-updatedAt")
