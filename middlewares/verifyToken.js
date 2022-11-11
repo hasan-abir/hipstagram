@@ -5,26 +5,22 @@ const { jwtVerifyToken } = require("../jwt_utils");
 dotenv.config();
 
 const tokenValidation = async (bearerToken) => {
-  try {
-    if (!bearerToken) {
-      throw new Error("No token authorization");
-    }
-
-    const bearer = bearerToken.split(" ");
-    const token = bearer[1];
-
-    const verifiedUser = await jwtVerifyToken(token);
-
-    const user = await User.exists({ username: verifiedUser.username });
-
-    if (!user) {
-      throw new Error("User doesn't exist");
-    }
-
-    return verifiedUser;
-  } catch (err) {
-    throw err;
+  if (!bearerToken) {
+    throw new Error("No token authorization");
   }
+
+  const bearer = bearerToken.split(" ");
+  const token = bearer[1];
+
+  const verifiedUser = await jwtVerifyToken(token);
+
+  const user = await User.exists({ username: verifiedUser.username });
+
+  if (!user) {
+    throw new Error("User doesn't exist");
+  }
+
+  return verifiedUser;
 };
 
 const verifyTokenMiddleware = async (req, res, next) => {
