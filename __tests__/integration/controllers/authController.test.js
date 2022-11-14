@@ -12,6 +12,7 @@ const dbHandler = require("../../db-handler");
 const app = require("../../../server");
 const User = require("../../../models/User");
 const imageKit = require("../../../image_handlers/imageKit");
+const { jwtGenerateToken } = require("../../../jwt_utils");
 
 describe("AuthController", () => {
   before(async () => {
@@ -24,7 +25,48 @@ describe("AuthController", () => {
   after(async () => {
     await dbHandler.closeDatabase();
   });
+  describe("GET: /api/auth/currentuser", () => {
+    it("should get the user", async () => {
+      // given
+      const username = "hasanabir";
 
+      const demoUser = new User({
+        avatar: {
+          url: "https://ik.imagekit.io/ozjxi1bzek/hipstagram_users/male_ZkJR1ReV5.jpg",
+          fileId: "male",
+        },
+        username,
+        email: "hasanabir@test.com",
+        gender: "male",
+        password: "testtest",
+      });
+
+      await demoUser.save();
+
+      const token = await jwtGenerateToken({
+        username: demoUser.username,
+        email: demoUser.email,
+      });
+
+      // when
+      const res = await chai
+        .request(app)
+        .get("/api/auth/currentuser/")
+        .set("authorization", "Bearer " + token)
+        .set("x-api-key", process.env.API_KEY);
+
+      expect(res).to.have.status(200);
+      expect(res.body.avatar.url).to.equal(demoUser.avatar.url);
+      expect(res.body.avatar.fileId).to.equal(demoUser.avatar.fileId);
+      expect(res.body.username).to.equal(demoUser.username);
+      expect(res.body.gender).to.equal(demoUser.gender);
+      expect(res.body.email).to.equal(demoUser.email);
+      expect(res.body.hasOwnProperty("password")).to.equal(false);
+      expect(res.body.hasOwnProperty("_id")).to.equal(false);
+      expect(res.body.hasOwnProperty("__v")).to.equal(false);
+      expect(res.body.hasOwnProperty("uploadedImages")).to.equal(false);
+    });
+  });
   describe("GET: /api/auth/user/:username", () => {
     it("should get the user", async () => {
       // given

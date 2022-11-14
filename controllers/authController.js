@@ -5,6 +5,18 @@ const {
   loginUser,
   getUserByUsername,
 } = require("../services/authService");
+const { verifyTokenMiddleware } = require("../middlewares/verifyToken");
+
+// Get current user
+router.get("/currentuser", verifyTokenMiddleware, async (req, res, next) => {
+  try {
+    const user = await getUserByUsername(req.username);
+
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+});
 
 // Get user by username
 router.get("/user/:username", async (req, res, next) => {
