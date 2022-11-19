@@ -1,6 +1,7 @@
 <script setup>
 import { RouterView } from "vue-router";
 import DynamicNavbar from "@/components/DynamicNavbar.vue";
+import { store } from "@/store";
 </script>
 
 <template>
@@ -8,7 +9,10 @@ import DynamicNavbar from "@/components/DynamicNavbar.vue";
     <v-main>
       <DynamicNavbar />
       <v-container>
-        <RouterView />
+        <div v-if="store.auth.loading" class="text-center">
+          <v-progress-circular indeterminate dark></v-progress-circular>
+        </div>
+        <RouterView v-else />
       </v-container>
     </v-main>
   </v-app>
