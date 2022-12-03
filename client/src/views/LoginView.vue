@@ -4,7 +4,6 @@ import { store } from "@/store";
 import { RouterLink } from "vue-router";
 
 const valid = ref(false);
-const form = ref(null);
 const loading = ref(false);
 const disabled = ref(false);
 const email = ref("");
@@ -21,19 +20,17 @@ const showPassword = ref(false);
 const error = ref(null);
 
 const submitForm = async () => {
-  error.value = null;
-  loading.value = true;
-  disabled.value = true;
+  if (valid.value) {
+    error.value = null;
+    loading.value = true;
+    disabled.value = true;
 
-  const formSubmitted = await form.value.validate();
-
-  if (formSubmitted.valid) {
     try {
       await store.login(email.value, password.value);
     } catch (err) {
       error.value = {
-        body: err.response.data,
-        statusCode: err.response.statusCode,
+        body: err.response ? err.response.data : null,
+        statusCode: err.response ? err.response.statusCode : null,
       };
 
       loading.value = false;

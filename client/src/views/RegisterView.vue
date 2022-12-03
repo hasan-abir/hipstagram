@@ -31,13 +31,11 @@ const showPassword = ref(false);
 const error = ref(null);
 
 const submitForm = async () => {
-  error.value = null;
-  loading.value = true;
-  disabled.value = true;
+  if (valid.value) {
+    error.value = null;
+    loading.value = true;
+    disabled.value = true;
 
-  const formSubmitted = await form.value.validate();
-
-  if (formSubmitted.valid) {
     try {
       await store.register(
         username.value,
@@ -48,8 +46,8 @@ const submitForm = async () => {
       );
     } catch (err) {
       error.value = {
-        body: err.response.data,
-        statusCode: err.response.statusCode,
+        body: err.response ? err.response.data : null,
+        statusCode: err.response ? err.response.statusCode : null,
       };
 
       loading.value = false;
@@ -127,7 +125,7 @@ const submitForm = async () => {
 
         <v-file-input
           v-model="avatar"
-          :rules="avatarRules"
+          :rules="avatar.length > 0 ? avatarRules : []"
           accept="image/png, image/jpeg, image/jpg"
           placeholder="Upload an avatar (optional)"
           prepend-icon="mdi-camera"

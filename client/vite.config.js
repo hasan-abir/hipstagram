@@ -13,8 +13,12 @@ export default defineConfig({
     }),
   ],
   test: {
-    globals: true,
     environment: "jsdom",
+    globals: true,
+    setupFiles: "/__tests__/setGlobal.js",
+    deps: {
+      inline: ["vuetify"],
+    },
   },
   define: { "process.env": {} },
   resolve: {
