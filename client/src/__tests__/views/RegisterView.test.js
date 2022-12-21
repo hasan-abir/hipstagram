@@ -83,7 +83,7 @@ describe("RegisterView", () => {
     const errMsg = "Error from backend";
     store.register.mockImplementation(() => {
       const err = new Error();
-      err.response = { data: { msg: errMsg }, statusCode: 500 };
+      err.response = { data: { msg: errMsg }, status: 500 };
 
       throw err;
     });
@@ -128,7 +128,7 @@ describe("RegisterView", () => {
 
     store.register.mockImplementation(() => {
       const err = new Error();
-      err.response = { data: errMsgs, statusCode: 400 };
+      err.response = { data: errMsgs, status: 400 };
 
       throw err;
     });

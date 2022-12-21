@@ -47,7 +47,7 @@ const submitForm = async () => {
     } catch (err) {
       error.value = {
         body: err.response ? err.response.data : null,
-        statusCode: err.response ? err.response.statusCode : null,
+        statusCode: err.response ? err.response.status : null,
       };
 
       loading.value = false;

@@ -235,6 +235,7 @@ describe("ImageService", () => {
       const images = [
         { updatedAt: "2022-10-20T06:25:45.115Z" },
         { updatedAt: "2022-10-21T06:25:45.115Z" },
+        { updatedAt: "2022-10-22T06:25:45.115Z" },
       ];
       const imagesFind = sinon.stub(Image, "find").returns({
         sort: sinon.stub().returns({
@@ -244,16 +245,21 @@ describe("ImageService", () => {
         }),
       });
 
+      const imagesCount = sinon
+        .stub(Image, "countDocuments")
+        .returns(Promise.resolve(1));
+
       // when
       const result = await imageService.getLatestImages();
 
       // then
-      expect(result.next).to.equal(images[1].updatedAt);
+      expect(result.next).to.equal(images[2].updatedAt);
       expect(imagesFind().sort.calledWith("-updatedAt")).to.equal(true);
       expect(imagesFind().sort().limit.calledWith(10)).to.equal(true);
       expect(
         imagesFind().sort().limit().select.calledWith("file caption updatedAt")
       ).to.equal(true);
+      expect(imagesCount.calledOnce).to.equal(true);
     });
     it("should get the next batch of images", async () => {
       // given
@@ -263,6 +269,7 @@ describe("ImageService", () => {
       const images = [
         { updatedAt: "2022-10-20T06:25:45.115Z" },
         { updatedAt: "2022-10-21T06:25:45.115Z" },
+        { updatedAt: "2022-10-22T06:25:45.115Z" },
       ];
       const imagesFind = sinon.stub(Image, "find").returns({
         sort: sinon.stub().returns({
@@ -271,6 +278,9 @@ describe("ImageService", () => {
           }),
         }),
       });
+      const imagesCount = sinon
+        .stub(Image, "countDocuments")
+        .returns(Promise.resolve(1));
 
       // when
       const result = await imageService.getLatestImages(
@@ -279,7 +289,7 @@ describe("ImageService", () => {
       );
 
       // then
-      expect(result.next).to.equal(images[1].updatedAt);
+      expect(result.next).to.equal(images[2].updatedAt);
       expect(
         imagesFind.calledWith({
           updatedAt: { $lt: lastItemTimestamp },
@@ -290,6 +300,7 @@ describe("ImageService", () => {
       expect(
         imagesFind().sort().limit().select.calledWith("file caption updatedAt")
       ).to.equal(true);
+      expect(imagesCount.calledOnce).to.equal(true);
     });
     it("should get the images of username", async () => {
       // given
@@ -311,12 +322,15 @@ describe("ImageService", () => {
           }),
         }),
       });
+      const imagesCount = sinon
+        .stub(Image, "countDocuments")
+        .returns(Promise.resolve(0));
 
       // when
       const result = await imageService.getLatestImages(limit, null, username);
 
       // then
-      expect(result.next).to.equal(images[1].updatedAt);
+      expect(result.next).to.equal(false);
       expect(
         userExists.calledWith({
           username,
@@ -332,6 +346,7 @@ describe("ImageService", () => {
       expect(
         imagesFind().sort().limit().select.calledWith("file caption updatedAt")
       ).to.equal(true);
+      expect(imagesCount.calledOnce).to.equal(true);
     });
   });
   describe("#getSingleImage()", () => {

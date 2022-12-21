@@ -66,7 +66,7 @@ const drawer = ref(null);
   <v-app-bar fixed color="background" :elevation="0">
     <template v-slot:prepend>
       <RouterLink to="/">
-        <v-img max-height="30" width="30" src="/logo.svg"></v-img>
+        <v-img max-height="30" width="30" src="/logo.svg" alt="Logo"></v-img>
       </RouterLink>
     </template>
 

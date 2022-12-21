@@ -139,11 +139,13 @@ describe("ImagesController", () => {
       let newImageB = new Image({ ...imageBody, caption: "B" });
       let newImageC = new Image({ ...imageBody, caption: "C" });
       let newImageD = new Image({ ...imageBody, caption: "D" });
+      let newImageE = new Image({ ...imageBody, caption: "E" });
       newImageA = await newImageA.save();
       newImageB = await newImageB.save();
       newImageC = await newImageC.save();
       newImageD = await newImageD.save();
-      const lastItemTimestamp = newImageC.updatedAt;
+      newImageE = await newImageE.save();
+      const lastItemTimestamp = newImageD.updatedAt;
 
       // when
       const res = await chai
@@ -154,7 +156,33 @@ describe("ImagesController", () => {
 
       // then
       expect(res).to.have.status(200);
-      expect(res.body.next).to.equal(newImageA.updatedAt.toISOString());
+      expect(res.body.next).to.equal(newImageB.updatedAt.toISOString());
+      expect(res.body.images[0].caption).to.equal(newImageC.caption);
+      expect(res.body.images[1].caption).to.equal(newImageB.caption);
+      expect(res.body.images[0].file.fileId).to.equal(imageBody.file.fileId);
+      expect(res.body.images[0].file.url).to.equal(imageBody.file.url);
+    });
+    it("next should be false when there aren't docs left", async () => {
+      // given
+      const limit = 2;
+      const imageBody = {
+        file: { url: "url", fileId: "fileId" },
+      };
+      let newImageA = new Image({ ...imageBody, caption: "A" });
+      let newImageB = new Image({ ...imageBody, caption: "B" });
+      newImageA = await newImageA.save();
+      newImageB = await newImageB.save();
+
+      // when
+      const res = await chai
+        .request(app)
+        .get("/api/images/latest")
+        .query({ limit })
+        .set("x-api-key", process.env.API_KEY);
+
+      // then
+      expect(res).to.have.status(200);
+      expect(res.body.next).to.equal(false);
       expect(res.body.images[0].caption).to.equal(newImageB.caption);
       expect(res.body.images[1].caption).to.equal(newImageA.caption);
       expect(res.body.images[0].file.fileId).to.equal(imageBody.file.fileId);
@@ -182,13 +210,15 @@ describe("ImagesController", () => {
       imageBody.author = author;
       let newImageA = new Image({ ...imageBody, caption: "A" });
       let newImageB = new Image({ ...imageBody, caption: "B" });
-      imageBody.author = secondAuthor;
       let newImageC = new Image({ ...imageBody, caption: "C" });
+      imageBody.author = secondAuthor;
       let newImageD = new Image({ ...imageBody, caption: "D" });
+      let newImageE = new Image({ ...imageBody, caption: "E" });
       newImageA = await newImageA.save();
       newImageB = await newImageB.save();
       newImageC = await newImageC.save();
       newImageD = await newImageD.save();
+      newImageE = await newImageE.save();
 
       // when
       const res = await chai
@@ -199,9 +229,9 @@ describe("ImagesController", () => {
 
       // then
       expect(res).to.have.status(200);
-      expect(res.body.next).to.equal(newImageA.updatedAt.toISOString());
-      expect(res.body.images[0].caption).to.equal(newImageB.caption);
-      expect(res.body.images[1].caption).to.equal(newImageA.caption);
+      expect(res.body.next).to.equal(newImageB.updatedAt.toISOString());
+      expect(res.body.images[0].caption).to.equal(newImageC.caption);
+      expect(res.body.images[1].caption).to.equal(newImageB.caption);
       expect(res.body.images[0].file.fileId).to.equal(imageBody.file.fileId);
       expect(res.body.images[0].file.url).to.equal(imageBody.file.url);
     });

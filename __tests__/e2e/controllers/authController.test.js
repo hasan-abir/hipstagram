@@ -308,8 +308,6 @@ describe("AuthController", () => {
       const savedUser = await User.findOne({ email: reqBody.email });
 
       // then
-      if (!res.body.token) console.log(res.body);
-
       expect(res).to.have.status(200);
       expect(res.body.hasOwnProperty("token")).to.equal(true);
       expect(savedUser.avatar.fileId).to.equal("female");

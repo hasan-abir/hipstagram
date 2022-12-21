@@ -29,7 +29,18 @@ const getLatestImages = async (limit = 10, lastItemTimestamp, username) => {
     .sort("-updatedAt")
     .limit(limit)
     .select("file caption updatedAt");
-  const next = images.length > 0 ? images[images.length - 1].updatedAt : false;
+
+  const newLastItemTimestamp =
+    images.length > 0 ? images[images.length - 1].updatedAt : null;
+
+  const docsLeft = newLastItemTimestamp
+    ? await Image.countDocuments({
+        ...query,
+        updatedAt: { $lt: newLastItemTimestamp },
+      })
+    : null;
+
+  const next = docsLeft && docsLeft > 0 ? newLastItemTimestamp : false;
 
   return { images, next };
 };

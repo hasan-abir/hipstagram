@@ -81,7 +81,7 @@ describe("LoginView", () => {
     const errMsg = "Error from backend";
     store.login.mockImplementation(() => {
       const err = new Error();
-      err.response = { data: { msg: errMsg }, statusCode: 500 };
+      err.response = { data: { msg: errMsg }, status: 500 };
 
       throw err;
     });
@@ -124,7 +124,7 @@ describe("LoginView", () => {
 
     store.login.mockImplementation(() => {
       const err = new Error();
-      err.response = { data: errMsgs, statusCode: 400 };
+      err.response = { data: errMsgs, status: 400 };
 
       throw err;
     });
