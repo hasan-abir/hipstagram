@@ -8,6 +8,7 @@ const feedbackService = require("../../../services/feedbackService");
 const User = require("../../../models/User");
 const Image = require("../../../models/Image");
 const Like = require("../../../models/Like");
+const Comment = require("../../../models/Comment");
 
 describe("FeedbackService", () => {
   afterEach(() => {
@@ -399,6 +400,10 @@ describe("FeedbackService", () => {
         }),
       });
 
+      const commentsCount = sinon
+        .stub(Comment, "countDocuments")
+        .returns(Promise.resolve(1));
+
       // when
       const result = await feedbackService.getLatestComments(imageId);
       // then
@@ -417,6 +422,7 @@ describe("FeedbackService", () => {
           .select()
           .populate.calledWith("author", "avatar username -_id")
       ).to.equal(true);
+      expect(commentsCount.calledOnce).to.equal(true);
     });
     it("should get next batches of comments", async () => {
       // given
@@ -441,6 +447,10 @@ describe("FeedbackService", () => {
           }),
         }),
       });
+
+      const commentsCount = sinon
+        .stub(Comment, "countDocuments")
+        .returns(Promise.resolve(1));
 
       // when
       const result = await feedbackService.getLatestComments(
@@ -469,6 +479,8 @@ describe("FeedbackService", () => {
           .select()
           .populate.calledWith("author", "avatar username -_id")
       ).to.equal(true);
+      expect(commentsCount.calledOnce).to.equal(true);
+
     });
     it("should throw when imageId is not ObjectId type", async () => {
       // given

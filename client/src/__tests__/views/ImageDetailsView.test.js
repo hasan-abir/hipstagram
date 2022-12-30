@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
-import ImageDetailsView from "@/views/ImageDetailsView.vue";
-import demoImages from "../demoImages.json";
-import vuetify from "@/plugins/vuetify";
-import { mount, DOMWrapper } from "@vue/test-utils";
 import imageController from "@/controllers/imageController";
+import vuetify from "@/plugins/vuetify";
 import router from "@/router";
+import ImageDetailsView from "@/views/ImageDetailsView.vue";
+import { DOMWrapper, mount } from "@vue/test-utils";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
+import demoImages from "../demoImages.json";
 
 describe("ImageDetailsView", () => {
   beforeAll(() => {
@@ -17,7 +17,15 @@ describe("ImageDetailsView", () => {
   it("renders correctly", async () => {
     // given
     const imageId = "123";
-    imageController.getSingleImage.mockResolvedValue(demoImages.images[0]);
+    const returnValue = { ...demoImages.images[0] };
+    returnValue.author = {
+      username: "Hasan Abir",
+      avatar: {
+        file: "file",
+        url: "url",
+      },
+    };
+    imageController.getSingleImage.mockResolvedValue(returnValue);
 
     router.push("/image/" + imageId);
 
@@ -39,7 +47,9 @@ describe("ImageDetailsView", () => {
     await nextTick();
 
     // then
-    expect(domWrapper.findAll("img").length).toBe(2);
+    expect(domWrapper.findAll("img").at(0).attributes("src")).toBe(
+      demoImages.images[0].file.url + "?tr=w-800"
+    );
     expect(imageController.getSingleImage).toBeCalledTimes(1);
     expect(imageController.getSingleImage).toBeCalledWith(imageId);
   });

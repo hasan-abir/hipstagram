@@ -149,9 +149,9 @@ const getLatestComments = async (imageId, limit = 10, lastItemTimestamp) => {
 
   const query = lastItemTimestamp
     ? {
-        image: imageId,
-        updatedAt: { $lt: lastItemTimestamp },
-      }
+      image: imageId,
+      updatedAt: { $lt: lastItemTimestamp },
+    }
     : { image: imageId };
 
   const comments = await Comment.find(query)
@@ -160,8 +160,17 @@ const getLatestComments = async (imageId, limit = 10, lastItemTimestamp) => {
     .select("-image")
     .populate("author", "avatar username -_id");
 
-  const next =
-    comments.length > 0 ? comments[comments.length - 1].updatedAt : false;
+  const newLastItemTimestamp =
+    comments.length > 0 ? comments[comments.length - 1].updatedAt : null;
+
+  const docsLeft = newLastItemTimestamp
+    ? await Comment.countDocuments({
+      ...query,
+      updatedAt: { $lt: newLastItemTimestamp },
+    })
+    : null;
+
+  const next = docsLeft && docsLeft > 0 ? newLastItemTimestamp : false;
 
   return { comments, next };
 };

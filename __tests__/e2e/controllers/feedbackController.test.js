@@ -529,12 +529,15 @@ describe("FeedbackController", () => {
       let newCommentB = new Comment({ text: "B", ...commentBody });
       let newCommentC = new Comment({ text: "C", ...commentBody });
       let newCommentD = new Comment({ text: "D", ...commentBody });
+      let newCommentE = new Comment({ text: "E", ...commentBody });
+
       newCommentA = await newCommentA.save();
       newCommentB = await newCommentB.save();
       newCommentC = await newCommentC.save();
       newCommentD = await newCommentD.save();
+      newCommentE = await newCommentE.save();
 
-      const lastItemTimestamp = newCommentC.updatedAt;
+      const lastItemTimestamp = newCommentD.updatedAt;
       // when
       const res = await chai
         .request(app)
@@ -543,7 +546,42 @@ describe("FeedbackController", () => {
         .set("x-api-key", process.env.API_KEY);
       // then
       expect(res).to.have.status(200);
-      expect(res.body.next).to.equal(newCommentA.updatedAt.toISOString());
+      expect(res.body.next).to.equal(newCommentB.updatedAt.toISOString());
+      expect(res.body.comments[0].text).to.equal(newCommentC.text);
+      expect(res.body.comments[1].text).to.equal(newCommentB.text);
+      expect(res.body.comments[0].author.username).to.equal(author.username);
+      expect(res.body.comments[0].author.avatar.fileId).to.equal(
+        author.avatar.fileId
+      );
+      expect(res.body.comments[0].author.hasOwnProperty("_id")).to.equal(false);
+      expect(res.body.comments[0].hasOwnProperty("image")).to.equal(false);
+    });
+    it("next should be false when there aren't docs left", async () => {
+      // given
+      const limit = 2;
+      const image = await Image.findOne({ caption: "example" });
+      const author = await User.findOne({ username: "Hasan Abir" });
+
+      const commentBody = {
+        author,
+        image,
+      };
+
+      let newCommentA = new Comment({ text: "A", ...commentBody });
+      let newCommentB = new Comment({ text: "B", ...commentBody });
+
+      newCommentA = await newCommentA.save();
+      newCommentB = await newCommentB.save();
+
+      // when
+      const res = await chai
+        .request(app)
+        .get("/api/feedback/comments/image/" + image._id)
+        .query({ limit})
+        .set("x-api-key", process.env.API_KEY);
+      // then
+      expect(res).to.have.status(200);
+      expect(res.body.next).to.equal(false);
       expect(res.body.comments[0].text).to.equal(newCommentB.text);
       expect(res.body.comments[1].text).to.equal(newCommentA.text);
       expect(res.body.comments[0].author.username).to.equal(author.username);
@@ -552,7 +590,7 @@ describe("FeedbackController", () => {
       );
       expect(res.body.comments[0].author.hasOwnProperty("_id")).to.equal(false);
       expect(res.body.comments[0].hasOwnProperty("image")).to.equal(false);
-    });
+    })
     it("should return error when imageId is not ObjectIdType", async () => {
       // given
       const imageId = "123";

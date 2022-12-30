@@ -1,8 +1,9 @@
 import { createApp } from "vue";
-import App from "./App.vue";
-import router from "./router";
+import App from "@/App.vue";
+import router from "@/router";
 import { registerPlugins } from "@/plugins";
-import vuetify from "./plugins/vuetify";
+import vuetify from "@/plugins/vuetify";
+import httpsInterceptor from "@/config/https";
 
 import "./assets/main.css";
 
@@ -15,3 +16,5 @@ registerPlugins(app);
 app.use(vuetify);
 
 app.mount("#app");
+
+httpsInterceptor();

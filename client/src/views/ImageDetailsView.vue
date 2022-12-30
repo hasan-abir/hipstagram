@@ -81,23 +81,24 @@ onMounted(async () => {
             size="small"
             @click="closeDetails()"
           ></v-btn>
-          <v-row class="h-100" no-gutters>
+          <v-row class="h-100 overflow-auto" no-gutters>
             <v-col
               cols="12"
               sm="9"
               class="bg-black"
-              :class="{ 'h-100': smAndUp }"
+              :class="{ 'h-100 sticky': smAndUp }"
             >
               <v-img
                 :src="image.file.url + '?tr=w-800'"
                 :lazy-src="image.file.url + '?tr=w-16'"
                 :alt="image.caption"
                 aspect-ratio="1"
+                height="100%"
               ></v-img>
             </v-col>
-            <v-col cols="12" sm="3" class="overflow-auto h-100 pa-4"
-              ><ImageFeedback
-            /></v-col>
+            <v-col cols="12" sm="3" class="pa-4">
+              <ImageFeedback :image="image" />
+            </v-col>
           </v-row>
         </v-card>
       </v-container>
@@ -110,5 +111,10 @@ onMounted(async () => {
   top: 0;
   right: 0;
   z-index: 1;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
 }
 </style>
