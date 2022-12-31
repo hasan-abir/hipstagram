@@ -48,19 +48,15 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   await store.getCurrentUser();
 
-  if (
-    to.name !== "home" &&
-    to.name !== "register" &&
-    to.name !== "login" &&
-    to.name !== "image-details" &&
-    !store.auth.user
-  ) {
+  const publicRoutes = ["home", "register", "login", "image-details"];
+
+  if (!publicRoutes.includes(to.name) && !store.auth.user) {
     next({ name: "login" });
   } else if (
     (to.name === "register" || to.name === "login") &&
     store.auth.user
   ) {
-    next({ name: "dashboard" });
+    next({ name: "home" });
   } else {
     next();
   }

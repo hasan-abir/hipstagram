@@ -94,6 +94,15 @@ onMounted(async () => {
 
 <template>
   <p class="mb-4">Comments</p>
+  <v-alert
+    v-if="error && error.body && error.body.msg"
+    variant="tonal"
+    type="error"
+    density="compact"
+    transition="fade-transition"
+    class="font-weight-bold mb-4"
+    >{{ error.body.msg }}</v-alert
+  >
   <v-form
     v-model="valid"
     @submit.prevent="submitComment"

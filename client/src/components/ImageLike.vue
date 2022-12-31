@@ -71,6 +71,15 @@ onMounted(async () => {
 </script>
 
 <template>
+  <v-alert
+    v-if="error && error.body && error.body.msg"
+    variant="tonal"
+    type="error"
+    density="compact"
+    transition="fade-transition"
+    class="font-weight-bold mb-4"
+    >{{ error.body.msg }}</v-alert
+  >
   <v-btn
     @click="clickedLike"
     :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'"

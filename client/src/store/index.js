@@ -36,7 +36,7 @@ export const store = reactive({
     localStorage.setItem("jwtToken", token);
 
     await this.getCurrentUser();
-    router.push({ name: "dashboard" });
+    router.push({ name: "home" });
   },
   async register(username, gender, avatar, email, password) {
     const token = await authController.register({
@@ -51,7 +51,7 @@ export const store = reactive({
     localStorage.setItem("jwtToken", token);
 
     await this.getCurrentUser();
-    router.push({ name: "dashboard" });
+    router.push({ name: "home" });
   },
   logout() {
     this.auth.token = null;
