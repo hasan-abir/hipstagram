@@ -48,7 +48,11 @@ onMounted(async () => {
   >
 
   <div class="css-grid">
-    <ImageCard v-for="image in images" :image="image" :key="image._id" />
+    <v-hover v-for="image in images" :key="image._id">
+      <template v-slot:default="{ isHovering, props }">
+        <ImageCard :image="image" :isHovering="isHovering" :props="props" />
+      </template>
+    </v-hover>
   </div>
   <v-row class="mx-0" justify="center" v-if="loading">
     <v-progress-circular indeterminate dark class="my-6"></v-progress-circular>

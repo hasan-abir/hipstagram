@@ -37,6 +37,9 @@ describe("ImageDetailsView", () => {
     mount(ImageDetailsView, {
       global: {
         plugins: [vuetify, router],
+        stubs: {
+          ImageFeedback: true,
+        },
       },
     });
 

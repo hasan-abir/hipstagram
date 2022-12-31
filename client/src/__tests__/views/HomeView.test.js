@@ -10,6 +10,9 @@ describe("HomeView", () => {
     const wrapper = mount(HomeView, {
       global: {
         plugins: [vuetify, router],
+        stubs: {
+          ImageGrid: true,
+        },
       },
     });
 

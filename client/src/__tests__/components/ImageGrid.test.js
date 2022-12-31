@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, vi, afterEach } from "vitest";
 import ImageGrid from "@/components/ImageGrid.vue";
+import ImageCard from "@/components/ImageCard.vue";
 import imageController from "@/controllers/imageController";
 import demoImages from "../demoImages.json";
 import vuetify from "@/plugins/vuetify";
@@ -22,6 +23,9 @@ describe("ImageGrid", () => {
     const wrapper = mount(ImageGrid, {
       global: {
         plugins: [vuetify],
+        stubs: {
+          ImageCard: true,
+        },
       },
     });
 
@@ -32,8 +36,7 @@ describe("ImageGrid", () => {
     await nextTick();
 
     // then
-    // Doubled length for the lazy loaded images
-    expect(wrapper.findAll("img").length).toBe(20);
+    expect(wrapper.findAllComponents(ImageCard).length).toBe(10);
     expect(imageController.getLatestImages).toHaveBeenCalledTimes(1);
     expect(imageController.getLatestImages).toHaveBeenCalledWith(
       10,
@@ -53,6 +56,9 @@ describe("ImageGrid", () => {
     const wrapper = mount(ImageGrid, {
       global: {
         plugins: [vuetify],
+        stubs: {
+          ImageCard: true,
+        },
       },
     });
 
@@ -64,7 +70,7 @@ describe("ImageGrid", () => {
 
     // then
     expect(wrapper.text()).toContain(errMsg);
-    expect(wrapper.findAll("img").length).toBe(0);
+    expect(wrapper.findAllComponents(ImageCard).length).toBe(0);
     expect(imageController.getLatestImages).toHaveBeenCalledTimes(1);
     expect(imageController.getLatestImages).toHaveBeenCalledWith(
       10,
@@ -80,6 +86,9 @@ describe("ImageGrid", () => {
     const wrapper = mount(ImageGrid, {
       global: {
         plugins: [vuetify],
+        stubs: {
+          ImageCard: true,
+        },
       },
     });
 
@@ -88,7 +97,10 @@ describe("ImageGrid", () => {
     await nextTick();
     await nextTick();
     await nextTick();
-    await wrapper.find("button").trigger("click");
+    await wrapper
+      .findAll("button")
+      .filter((el) => el.text() === "Show more")[0]
+      .trigger("click");
     // Wait again after click
     await nextTick();
     await nextTick();
@@ -96,8 +108,7 @@ describe("ImageGrid", () => {
     await nextTick();
 
     // then
-    // Doubled length for the lazy loaded images
-    expect(wrapper.findAll("img").length).toBe(40);
+    expect(wrapper.findAllComponents(ImageCard).length).toBe(20);
     expect(imageController.getLatestImages).toHaveBeenCalledTimes(2);
     expect(imageController.getLatestImages).toHaveBeenCalledWith(
       10,

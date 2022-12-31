@@ -1,4 +1,6 @@
 import ImageFeedback from "@/components/ImageFeedback.vue";
+import ImageComment from "@/components/ImageComment.vue";
+import ImageLike from "@/components/ImageLike.vue";
 import vuetify from "@/plugins/vuetify";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
@@ -19,6 +21,10 @@ describe.only("ImageFeedback", () => {
     const wrapper = mount(ImageFeedback, {
       global: {
         plugins: [vuetify],
+        stubs: {
+          ImageComment: true,
+          ImageLike: true,
+        },
       },
       props: {
         image,
