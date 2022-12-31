@@ -1,5 +1,5 @@
 describe("Register route", () => {
-  it("visits authenticated and gets redirects to dashboard", () => {
+  it("visits authenticated and gets redirects to home", () => {
     const user = {
       avatar: {
         fileId: "cat",
@@ -18,9 +18,9 @@ describe("Register route", () => {
 
     cy.visit("/register");
 
-    cy.url().should("include", "/dashboard");
+    cy.url().should("include", "/");
   });
-  it("visits, registers and gets redirected to dashboard", () => {
+  it("visits, registers and gets redirected to home", () => {
     const user = {
       avatar: {
         fileId: "cat",
@@ -45,7 +45,7 @@ describe("Register route", () => {
     cy.get("input[type='password']").type("testtest");
     cy.get("button[type='submit']").click();
 
-    cy.url().should("include", "/dashboard");
+    cy.url().should("include", "/");
   });
   it("visits the register url", () => {
     cy.visit("/register");
