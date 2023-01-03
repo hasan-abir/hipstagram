@@ -81,7 +81,7 @@ onMounted(async () => {
     >{{ error.body.msg }}</v-alert
   >
   <v-btn
-    @click="clickedLike"
+    @click="clickedLike()"
     :prepend-icon="isLiked ? 'mdi-heart' : 'mdi-heart-outline'"
     color="primary"
     variant="tonal"

@@ -1,3 +1,5 @@
+import demoImages from "../../../src/__tests__/demoImages.json";
+
 describe("Dashboard route", () => {
   it("visits authenticated", () => {
     const user = {
@@ -15,10 +17,21 @@ describe("Dashboard route", () => {
       statusCode: 200,
       body: user,
     });
+    cy.intercept(
+      "GET",
+      "/api/images/latest?limit=10&username=" + user.username,
+      {
+        statusCode: 200,
+        body: demoImages,
+      }
+    );
 
     cy.visit("/dashboard");
 
-    cy.contains("section", "Dashboard");
+    cy.contains("Welcome, " + user.username);
+    cy.get(".v-card").should("have.length", 10);
+    cy.get("button").filter(":contains('Update')").should("have.length", 10);
+    cy.get("button").filter(":contains('Delete')").should("have.length", 10);
   });
   it("visits and gets redirected to login", () => {
     cy.visit("/dashboard");

@@ -1,57 +1,40 @@
 export default (dateFromDB) => {
-    let uploadDate = null
+  let dateString = null;
 
-    const year =
-        new Date().getFullYear() - new Date(dateFromDB).getFullYear();
-    const month =
-        new Date().getMonth() +
-        1 -
-        (new Date(dateFromDB).getMonth() + 1);
-    const date =
-        new Date().getDate() - new Date(dateFromDB).getDate();
-    const hour =
-        new Date().getHours() - new Date(dateFromDB).getHours();
-    const min =
-        new Date().getMinutes() - new Date(dateFromDB).getMinutes();
-    const sec =
-        new Date().getSeconds() - new Date(dateFromDB).getSeconds();
-    if (year > 0) {
-        if (year === 1) {
-            uploadDate = "1 year";
-        } else {
-            uploadDate = `${year} years`;
-        }
-    } else if (month > 0) {
-        if (month === 1) {
-            uploadDate = "1 month";
-        } else {
-            uploadDate = `${month} months`;
-        }
-    } else if (date > 0) {
-        if (date === 1) {
-            uploadDate = "1 day";
-        } else {
-            uploadDate = `${date} days`;
-        }
-    } else if (hour > 0) {
-        if (hour === 1) {
-            uploadDate = "1 hour";
-        } else {
-            uploadDate = `${hour} hours`;
-        }
-    } else if (min > 0) {
-        if (min === 1) {
-            uploadDate = "1 min";
-        } else {
-            uploadDate = `${min} mins`;
-        }
-    } else if (sec >= 0) {
-        if (sec === 1 || sec === 0) {
-            uploadDate = `${sec} sec`;
-        } else {
-            uploadDate = `${sec} secs`;
-        }
+  const pastDate = new Date(dateFromDB);
+  const currentDate = new Date();
+
+  const difference = currentDate - pastDate;
+  const days = Math.round(difference / (1000 * 60 * 60 * 24));
+  const hours = Math.round(difference / (1000 * 60 * 60));
+  const mins = Math.round(difference / (1000 * 60));
+  const secs = Math.round(difference / 1000);
+
+  if (days > 0) {
+    if (days === 1) {
+      dateString = "a day";
+    } else {
+      dateString = `${days} days`;
     }
+  } else if (hours > 0) {
+    if (hours === 1) {
+      dateString = "an hour";
+    } else {
+      dateString = `${hours} hours`;
+    }
+  } else if (mins > 0) {
+    if (mins === 1) {
+      dateString = "a min";
+    } else {
+      dateString = `${mins} mins`;
+    }
+  } else if (secs >= 0) {
+    if (secs === 1 || secs === 0) {
+      dateString = `a moment`;
+    } else {
+      dateString = `${secs} secs`;
+    }
+  }
 
-    return uploadDate
-}
+  return dateString;
+};

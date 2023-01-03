@@ -44,7 +44,7 @@ onMounted(async () => {
   <v-overlay
     v-model="overlay"
     theme="light"
-    @click:outside="closeDetails"
+    @click:outside="closeDetails()"
     class="align-center justify-center"
     content-class="w-100 h-100 pointer-events-none d-flex align-center"
   >

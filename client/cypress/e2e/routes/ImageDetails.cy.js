@@ -265,7 +265,7 @@ describe("Image Details route", () => {
 
     cy.contains("Image not found").should("exist");
 
-    cy.get("img").should("have.length", 11);
+    cy.get(".v-card").should("have.length", 10);
   });
   it("clicks outside the modal", () => {
     cy.intercept("GET", "/api/images/latest?limit=10", {
@@ -293,7 +293,7 @@ describe("Image Details route", () => {
     cy.get(".v-overlay__scrim").click(0, 0, { force: true });
 
     cy.url().should("include", "/");
-    cy.get("img").should("have.length", 11);
+    cy.get(".v-card").should("have.length", 10);
   });
   it("clicks the close button", () => {
     cy.intercept("GET", "/api/images/latest?limit=10", {
@@ -321,7 +321,7 @@ describe("Image Details route", () => {
     cy.get(".mdi-close").click();
 
     cy.url().should("include", "/");
-    cy.get("img").should("have.length", 11);
+    cy.get(".v-card").should("have.length", 10);
   });
   it("visits the image detail url", () => {
     cy.intercept("GET", "/api/images/latest?limit=10", {
@@ -346,6 +346,6 @@ describe("Image Details route", () => {
     });
     cy.visit("/image/" + demoImages.images[0]._id);
 
-    cy.get("img").should("have.length.greaterThan", 11);
+    cy.get(".v-card").should("have.length.greaterThan", 10);
   });
 });

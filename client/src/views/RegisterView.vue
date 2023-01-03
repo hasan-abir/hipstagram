@@ -5,7 +5,6 @@ import { store } from "@/store";
 const valid = ref(false);
 const form = ref(null);
 const loading = ref(false);
-const disabled = ref(false);
 const username = ref("");
 const usernameRules = ref([(v) => !!v || "Username is required"]);
 const gender = ref("other");
@@ -34,7 +33,6 @@ const submitForm = async () => {
   if (valid.value) {
     error.value = null;
     loading.value = true;
-    disabled.value = true;
 
     try {
       await store.register(
@@ -51,7 +49,6 @@ const submitForm = async () => {
       };
 
       loading.value = false;
-      disabled.value = false;
     }
   }
 };
@@ -139,7 +136,7 @@ const submitForm = async () => {
           block
           dark
           :loading="loading"
-          :disabled="disabled"
+          :disabled="loading"
           type="submit"
           >Sign up</v-btn
         >

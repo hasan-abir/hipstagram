@@ -10,7 +10,6 @@ const props = defineProps({
 
 const form = ref();
 const valid = ref(false);
-const disabled = ref(false);
 const error = ref(null);
 const loading = ref(false);
 const newComment = ref("");
@@ -23,7 +22,6 @@ const submitComment = async () => {
     try {
       error.value = null;
       loading.value = true;
-      disabled.value = true;
 
       const data = await feedbackController.commentOnImage(
         store.auth.token,
@@ -41,7 +39,6 @@ const submitComment = async () => {
       };
     } finally {
       loading.value = false;
-      disabled.value = false;
     }
   }
 };
@@ -118,7 +115,7 @@ onMounted(async () => {
       color="primary"
       rows="2"
     ></v-textarea>
-    <v-btn color="primary" block dark type="submit" :disabled="disabled"
+    <v-btn color="primary" block dark type="submit" :disabled="loading"
       >Post Comment</v-btn
     >
   </v-form>

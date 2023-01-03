@@ -1,7 +1,11 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import imageController from "@/controllers/imageController";
 import ImageCard from "@/components/ImageCard.vue";
+import imageController from "@/controllers/imageController";
+import { onMounted, ref } from "vue";
+
+const componentProps = defineProps({
+  username: String,
+});
 
 const loading = ref(true);
 const images = ref([]);
@@ -15,7 +19,7 @@ const loadImages = async () => {
     const data = await imageController.getLatestImages(
       limit.value,
       nextImage.value,
-      null
+      componentProps.username
     );
 
     images.value.push(...data.images);
@@ -28,6 +32,13 @@ const loadImages = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const onImageDelete = async () => {
+  images.value = [];
+  nextImage.value = null;
+
+  await loadImages();
 };
 
 onMounted(async () => {
@@ -50,13 +61,21 @@ onMounted(async () => {
   <div class="css-grid">
     <v-hover v-for="image in images" :key="image._id">
       <template v-slot:default="{ isHovering, props }">
-        <ImageCard :image="image" :isHovering="isHovering" :props="props" />
+        <ImageCard
+          :image="image"
+          :isHovering="isHovering"
+          :props="props"
+          :editable="$route.name === 'dashboard'"
+          @image-delete="onImageDelete()"
+        />
       </template>
     </v-hover>
   </div>
   <v-row class="mx-0" justify="center" v-if="loading">
     <v-progress-circular indeterminate dark class="my-6"></v-progress-circular>
   </v-row>
+  <p v-else-if="images.length === 0">No images uploaded... yet</p>
+
   <v-row class="mx-0" justify="center" v-if="nextImage">
     <v-btn
       @click="loadImages()"

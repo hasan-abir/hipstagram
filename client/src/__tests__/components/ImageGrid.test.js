@@ -6,6 +6,7 @@ import demoImages from "../demoImages.json";
 import vuetify from "@/plugins/vuetify";
 import { mount } from "@vue/test-utils";
 import { nextTick } from "vue";
+import router from "@/router";
 
 describe("ImageGrid", () => {
   beforeAll(() => {
@@ -22,7 +23,7 @@ describe("ImageGrid", () => {
     // when
     const wrapper = mount(ImageGrid, {
       global: {
-        plugins: [vuetify],
+        plugins: [vuetify, router],
         stubs: {
           ImageCard: true,
         },
@@ -41,7 +42,7 @@ describe("ImageGrid", () => {
     expect(imageController.getLatestImages).toHaveBeenCalledWith(
       10,
       null,
-      null
+      undefined
     );
   });
   it("displays error from backend", async () => {
@@ -55,7 +56,7 @@ describe("ImageGrid", () => {
     // when
     const wrapper = mount(ImageGrid, {
       global: {
-        plugins: [vuetify],
+        plugins: [vuetify, router],
         stubs: {
           ImageCard: true,
         },
@@ -75,7 +76,7 @@ describe("ImageGrid", () => {
     expect(imageController.getLatestImages).toHaveBeenCalledWith(
       10,
       null,
-      null
+      undefined
     );
   });
   it("show more button loads more images", async () => {
@@ -85,7 +86,7 @@ describe("ImageGrid", () => {
     // when
     const wrapper = mount(ImageGrid, {
       global: {
-        plugins: [vuetify],
+        plugins: [vuetify, router],
         stubs: {
           ImageCard: true,
         },
@@ -113,7 +114,7 @@ describe("ImageGrid", () => {
     expect(imageController.getLatestImages).toHaveBeenCalledWith(
       10,
       null,
-      null
+      undefined
     );
   });
 });

@@ -5,7 +5,6 @@ import { RouterLink } from "vue-router";
 
 const valid = ref(false);
 const loading = ref(false);
-const disabled = ref(false);
 const email = ref("");
 const emailRules = ref([
   (v) => !!v || "Email is required",
@@ -23,7 +22,6 @@ const submitForm = async () => {
   if (valid.value) {
     error.value = null;
     loading.value = true;
-    disabled.value = true;
 
     try {
       await store.login(email.value, password.value);
@@ -34,7 +32,6 @@ const submitForm = async () => {
       };
 
       loading.value = false;
-      disabled.value = false;
     }
   }
 };
@@ -97,7 +94,7 @@ const submitForm = async () => {
           dark
           type="submit"
           :loading="loading"
-          :disabled="disabled"
+          :disabled="loading"
           >Login</v-btn
         >
       </v-form>

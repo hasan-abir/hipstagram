@@ -19,10 +19,10 @@ describe("Home route", () => {
       body: restOfDemoImages,
     });
     cy.visit("/");
-    cy.get("img").should("have.length", 9);
+    cy.get(".v-card").should("have.length", 8);
 
     cy.get("button").contains("Show more").click();
-    cy.get("img").should("have.length", 11);
+    cy.get(".v-card").should("have.length", 10);
     cy.get("button").contains("Show more").should("not.exist");
   });
 
@@ -33,6 +33,6 @@ describe("Home route", () => {
     });
     cy.visit("/");
 
-    cy.get("img").should("have.length", 11);
+    cy.get(".v-card").should("have.length", 10);
   });
 });
