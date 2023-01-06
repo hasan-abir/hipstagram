@@ -44,8 +44,9 @@ const submitForm = async () => {
         <h1 class="mb-6 display-1 text-center">Login</h1>
         <template v-if="error">
           <v-alert
-            v-if="error.body.msg"
+            v-if="error.body && error.body.msg"
             prominent
+            :icon="false"
             type="error"
             density="compact"
             variant="tonal"
@@ -58,6 +59,7 @@ const submitForm = async () => {
               v-for="(value, key) in error.body"
               :key="key"
               prominent
+              :icon="false"
               type="error"
               density="compact"
               variant="tonal"

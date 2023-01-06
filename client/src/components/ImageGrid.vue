@@ -1,5 +1,6 @@
 <script setup>
 import ImageCard from "@/components/ImageCard.vue";
+import UploadImage from "@/components/UploadImage.vue";
 import imageController from "@/controllers/imageController";
 import { onMounted, ref } from "vue";
 
@@ -34,7 +35,7 @@ const loadImages = async () => {
   }
 };
 
-const onImageDelete = async () => {
+const refreshImages = async () => {
   images.value = [];
   nextImage.value = null;
 
@@ -50,6 +51,7 @@ onMounted(async () => {
   <v-alert
     v-if="error && error.body && error.body.msg"
     prominent
+    :icon="false"
     type="error"
     density="compact"
     variant="tonal"
@@ -57,7 +59,12 @@ onMounted(async () => {
     class="font-weight-bold mb-4"
     >{{ error.body.msg }}</v-alert
   >
-
+  <template v-if="$route.name === 'dashboard'">
+    <h1 class="font-weight-bold mb-12 text-h4 text-sm-h5">Upload an image</h1>
+    <UploadImage @image-upload="refreshImages()" />
+    <v-divider class="my-4"></v-divider>
+    <h1 class="font-weight-bold mb-12 text-h4 text-sm-h5">Uploaded Images</h1>
+  </template>
   <div class="css-grid">
     <v-hover v-for="image in images" :key="image._id">
       <template v-slot:default="{ isHovering, props }">
@@ -66,7 +73,7 @@ onMounted(async () => {
           :isHovering="isHovering"
           :props="props"
           :editable="$route.name === 'dashboard'"
-          @image-delete="onImageDelete()"
+          @image-delete="refreshImages()"
         />
       </template>
     </v-hover>

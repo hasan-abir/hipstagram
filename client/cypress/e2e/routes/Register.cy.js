@@ -43,6 +43,9 @@ describe("Register route", () => {
     cy.get("input[type='text']").eq(0).type("Hasan");
     cy.get("input[type='text']").eq(1).type("hasanabir@test.com");
     cy.get("input[type='password']").type("testtest");
+    cy.get("input[type=file]").selectFile("cypress/e2e/airplane.jpg", {
+      force: true,
+    });
     cy.get("button[type='submit']").click();
 
     cy.url().should("include", "/");

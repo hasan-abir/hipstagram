@@ -27,7 +27,7 @@ const getSingleImage = async (imageId) => {
 const uploadImage = async (token, file, caption) => {
   const formData = new FormData();
 
-  formData.set("file", file);
+  formData.set("file", file, file.name);
   formData.set("caption", caption);
 
   const res = await axios.post(routePrefix + "upload", formData, {

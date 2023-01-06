@@ -51,6 +51,41 @@ describe("ImageLike", () => {
       imageId
     );
   });
+  it("error from backend is visible", async () => {
+    // given
+    const msg = "Error from backend";
+    feedbackController.getLikesStatus.mockImplementation(() => {
+      const err = new Error();
+      err.response = { data: { msg }, status: 500 };
+
+      throw err;
+    });
+    const imageId = "456";
+
+    // when
+    const wrapper = mount(ImageLike, {
+      global: {
+        plugins: [vuetify],
+      },
+      props: {
+        imageId,
+      },
+    });
+
+    // Wait to update the DOM
+    await nextTick();
+    await nextTick();
+    await nextTick();
+    await nextTick();
+
+    // then
+    expect(feedbackController.getLikesStatus).toBeCalledTimes(1);
+    expect(feedbackController.getLikesStatus).toBeCalledWith(
+      store.auth.token,
+      imageId
+    );
+    expect(wrapper.text()).toContain(msg);
+  });
   it("likes image", async () => {
     // given
     const imageId = "456";

@@ -94,6 +94,7 @@ onMounted(async () => {
   <v-alert
     v-if="error && error.body && error.body.msg"
     variant="tonal"
+    :icon="false"
     type="error"
     density="compact"
     transition="fade-transition"

@@ -31,7 +31,7 @@ describe("AuthController", () => {
     });
   });
   describe("#getUserByUsername()", () => {
-    it("should get the user", async () => {
+    it("should get the user by username", async () => {
       // given
       const username = "Hasan Abir";
       const response = { data: { username } };
@@ -49,7 +49,7 @@ describe("AuthController", () => {
     });
   });
   describe("#login()", () => {
-    it("should get the user", async () => {
+    it("should login", async () => {
       // given
       const userBody = { email: "hasanabir@test.com", password: "testtest" };
       const response = { data: { token: "123" } };
@@ -67,12 +67,12 @@ describe("AuthController", () => {
     });
   });
   describe("#register()", () => {
-    it("should get the user", async () => {
+    it("should register", async () => {
       // given
       const userBody = {
         username: "Hasan Abir",
         gender: "male",
-        avatar: {},
+        avatar: null,
         email: "hasanabir@test.com",
         password: "testtest",
       };

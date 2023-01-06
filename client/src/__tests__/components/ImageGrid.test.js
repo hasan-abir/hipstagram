@@ -26,6 +26,7 @@ describe("ImageGrid", () => {
         plugins: [vuetify, router],
         stubs: {
           ImageCard: true,
+          UploadImage: true,
         },
       },
     });
@@ -59,6 +60,7 @@ describe("ImageGrid", () => {
         plugins: [vuetify, router],
         stubs: {
           ImageCard: true,
+          UploadImage: true,
         },
       },
     });
@@ -89,6 +91,7 @@ describe("ImageGrid", () => {
         plugins: [vuetify, router],
         stubs: {
           ImageCard: true,
+          UploadImage: true,
         },
       },
     });

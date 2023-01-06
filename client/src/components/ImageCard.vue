@@ -66,6 +66,17 @@ const deleteImage = async () => {
         :imageId="props.image._id"
         :caption="props.image.caption"
       />
+      <v-alert
+        v-if="error && error.body && error.body.msg"
+        prominent
+        type="error"
+        density="compact"
+        variant="text"
+        :icon="false"
+        transition="fade-transition"
+        class="font-weight-bold mb-4"
+        >{{ error.body.msg }}</v-alert
+      >
       <v-btn
         color="error"
         block

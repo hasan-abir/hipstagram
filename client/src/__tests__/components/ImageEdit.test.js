@@ -37,6 +37,48 @@ describe("ImageEdit", () => {
     // then
     expect(wrapper.find("textarea").element.value).toBe(caption);
   });
+  it("error from backend is visible", async () => {
+    // given
+    const msg = "Error from backend";
+    imageController.updateImage.mockImplementation(() => {
+      const err = new Error();
+      err.response = { data: { msg }, status: 500 };
+
+      throw err;
+    });
+
+    const caption = "Lorem";
+    const updatedCaption = "Ipsum";
+
+    // when
+    const wrapper = mount(ImageEdit, {
+      global: {
+        plugins: [vuetify],
+      },
+      // For form submissions
+      attachTo: document.body,
+      props: {
+        imageId: demoImages.images[0]._id,
+        caption,
+      },
+    });
+
+    await wrapper.find("textarea").setValue(updatedCaption);
+    await wrapper.find("button").trigger("click");
+    await nextTick();
+    await nextTick();
+    await nextTick();
+    await nextTick();
+
+    // then
+    expect(imageController.updateImage).toBeCalledTimes(1);
+    expect(imageController.updateImage).toBeCalledWith(
+      store.auth.token,
+      demoImages.images[0]._id,
+      updatedCaption
+    );
+    expect(wrapper.text()).toContain(msg);
+  });
   it("updates image", async () => {
     // given
     imageController.updateImage.mockResolvedValue(null);

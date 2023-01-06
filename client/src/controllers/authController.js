@@ -31,7 +31,20 @@ const login = async (user) => {
 };
 
 const register = async (user) => {
-  const res = await axios.post(routePrefix + "register", user, {
+  let data = null;
+  if (user.avatar) {
+    const formData = new FormData();
+    formData.set("username", user.username);
+    formData.set("gender", user.gender);
+    formData.set("avatar", user.avatar);
+    formData.set("email", user.email);
+    formData.set("password", user.password);
+
+    data = formData;
+  } else {
+    data = { ...user };
+  }
+  const res = await axios.post(routePrefix + "register", data, {
     headers: keyHeader,
   });
 

@@ -60,6 +60,7 @@ onMounted(async () => {
         <v-alert
           v-if="error && error.statusCode === 404"
           prominent
+          :icon="false"
           type="error"
           density="compact"
           transition="fade-transition"

@@ -43,7 +43,46 @@ describe("ImageCard", () => {
     expect(highResImg).toBeDefined();
     expect(highResImg.attributes("alt")).toBe(demoImages.images[0].caption);
   });
+  it("error from backend is visible", async () => {
+    // given
+    const msg = "Error from backend";
+    imageController.removeImage.mockImplementation(() => {
+      const err = new Error();
+      err.response = { data: { msg }, status: 500 };
+
+      throw err;
+    });
+
+    // when
+    const wrapper = mount(ImageCard, {
+      global: {
+        plugins: [vuetify],
+        stubs: {
+          ImageEdit: true,
+        },
+      },
+      props: {
+        image: demoImages.images[0],
+        editable: true,
+      },
+    });
+
+    const deleteBtn = wrapper
+      .findAll("button")
+      .filter((el) => el.text() === "Delete")[0];
+
+    await deleteBtn.trigger("click");
+
+    // then
+    expect(imageController.removeImage).toBeCalledTimes(1);
+    expect(imageController.removeImage).toBeCalledWith(
+      store.auth.token,
+      demoImages.images[0]._id
+    );
+    expect(wrapper.text()).toContain(msg);
+  });
   it("clicks delete image", async () => {
+    // given
     imageController.removeImage.mockResolvedValue(null);
     // when
     const wrapper = mount(ImageCard, {

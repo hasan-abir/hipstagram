@@ -38,7 +38,7 @@ const submitForm = async () => {
       await store.register(
         username.value,
         gender.value,
-        avatar.value,
+        avatar.value[0],
         email.value,
         password.value
       );
@@ -61,8 +61,9 @@ const submitForm = async () => {
         <h1 class="mb-6 display-1 text-center">Create an account</h1>
         <template v-if="error">
           <v-alert
-            v-if="error.body.msg"
+            v-if="error.body && error.body.msg"
             prominent
+            :icon="false"
             type="error"
             density="compact"
             variant="tonal"
@@ -75,6 +76,7 @@ const submitForm = async () => {
               v-for="(value, key) in error.body"
               :key="key"
               prominent
+              :icon="false"
               type="error"
               density="compact"
               variant="tonal"

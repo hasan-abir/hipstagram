@@ -113,6 +113,42 @@ describe("ImageComment", () => {
       lastCommentFromArr.text
     );
   });
+  it("error from backend is visible", async () => {
+    // given
+    const imageId = "456";
+    const msg = "Error from backend";
+    feedbackController.getLatestComments.mockImplementation(() => {
+      const err = new Error();
+      err.response = { data: { msg }, status: 500 };
+
+      throw err;
+    });
+
+    // when
+    const wrapper = mount(ImageComment, {
+      global: {
+        plugins: [vuetify],
+      },
+      props: {
+        imageId,
+      },
+    });
+
+    // Wait to update the DOM
+    await nextTick();
+    await nextTick();
+    await nextTick();
+    await nextTick();
+
+    // then
+    expect(feedbackController.getLatestComments).toBeCalledTimes(1);
+    expect(feedbackController.getLatestComments).toBeCalledWith(
+      imageId,
+      10,
+      null
+    );
+    expect(wrapper.text()).toContain(msg);
+  });
   it("clicked delete", async () => {
     // given
     const imageId = "456";

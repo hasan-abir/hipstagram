@@ -3,6 +3,12 @@ import axios from "axios";
 import imageController from "@/controllers/imageController";
 import { keyHeader } from "@/headers";
 
+function FormDataMock() {
+  this.set = vi.fn();
+}
+
+global.FormData = FormDataMock;
+
 describe("AuthController", () => {
   beforeAll(() => {
     vi.mock("axios");
@@ -70,18 +76,17 @@ describe("AuthController", () => {
       const response = { file: "url" };
       axios.post.mockResolvedValue(response);
 
-      const formData = new FormData();
-
-      formData.set("file", file);
-      formData.set("caption", caption);
-
       // when
       const result = await imageController.uploadImage(token, file, caption);
 
       // then
       expect(result).toBe(response.data);
       expect(axios.post).toBeCalledTimes(1);
-      expect(axios.post).toBeCalledWith("/api/images/upload", formData, {
+      expect(axios.post.mock.calls[0][0]).toBe("/api/images/upload");
+      console.log({
+        headers: { ...keyHeader, authorization: "Bearer " + token },
+      });
+      expect(axios.post.mock.calls[0][2]).toStrictEqual({
         headers: { ...keyHeader, authorization: "Bearer " + token },
       });
     });
