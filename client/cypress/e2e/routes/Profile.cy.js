@@ -1,3 +1,5 @@
+import demoImages from "../../../src/__tests__/demoImages.json";
+
 describe("Profile route", () => {
   it("visits authenticated", () => {
     const user = {
@@ -15,10 +17,19 @@ describe("Profile route", () => {
       statusCode: 200,
       body: user,
     });
+    cy.intercept(
+      "GET",
+      "/api/images/latest?limit=10&username=" + user.username,
+      {
+        statusCode: 200,
+        body: demoImages,
+      }
+    );
 
     cy.visit("/profile");
 
-    cy.contains("section", "Profile");
+    cy.contains(user.username);
+    cy.get(".v-card").should("have.length", 10);
   });
   it("visits and gets redirected to login", () => {
     cy.visit("/profile");

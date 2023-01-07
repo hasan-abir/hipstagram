@@ -6,6 +6,7 @@ import { mount } from "@vue/test-utils";
 import { afterAll, describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
 import demoComments from "../demoComments.json";
+import router from "@/router";
 
 describe("ImageComment", () => {
   beforeAll(() => {
@@ -39,7 +40,7 @@ describe("ImageComment", () => {
     // when
     const wrapper = mount(ImageComment, {
       global: {
-        plugins: [vuetify],
+        plugins: [vuetify, router],
       },
       props: {
         imageId,
@@ -76,7 +77,7 @@ describe("ImageComment", () => {
     // when
     const wrapper = mount(ImageComment, {
       global: {
-        plugins: [vuetify],
+        plugins: [vuetify, router],
       },
       // For form submissions
       attachTo: document.body,
@@ -127,7 +128,7 @@ describe("ImageComment", () => {
     // when
     const wrapper = mount(ImageComment, {
       global: {
-        plugins: [vuetify],
+        plugins: [vuetify, router],
       },
       props: {
         imageId,
@@ -158,7 +159,7 @@ describe("ImageComment", () => {
     // when
     const wrapper = mount(ImageComment, {
       global: {
-        plugins: [vuetify],
+        plugins: [vuetify, router],
       },
       props: {
         imageId,

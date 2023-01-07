@@ -5,6 +5,7 @@ import vuetify from "@/plugins/vuetify";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import demoImages from "../demoImages.json";
+import router from "@/router";
 
 describe.only("ImageFeedback", () => {
   it("renders correctly", async () => {
@@ -20,7 +21,7 @@ describe.only("ImageFeedback", () => {
     image.caption = "Lorem";
     const wrapper = mount(ImageFeedback, {
       global: {
-        plugins: [vuetify],
+        plugins: [vuetify, router],
         stubs: {
           ImageComment: true,
           ImageLike: true,

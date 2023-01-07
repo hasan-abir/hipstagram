@@ -2,6 +2,7 @@
 import getUploadDate from "@/utils/getUploadDate";
 import ImageLike from "@/components/ImageLike.vue";
 import ImageComment from "@/components/ImageComment.vue";
+import { RouterLink } from "vue-router";
 
 const props = defineProps({
   image: Object,
@@ -9,8 +10,19 @@ const props = defineProps({
 </script>
 
 <template>
-  <v-avatar :image="props.image.author.avatar.url" class="mr-4 mb-2"></v-avatar>
-  <h1 class="d-inline text-h5 text-sm-h6">{{ props.image.author.username }}</h1>
+  <RouterLink
+    style="color: black; text-decoration: none"
+    :to="'/user/' + props.image.author.username"
+  >
+    <v-avatar
+      :image="props.image.author.avatar.url + '?tr=ar-1-1'"
+      class="mr-4 mb-2"
+    ></v-avatar>
+    <h1 class="d-inline text-h5 text-sm-h6">
+      {{ props.image.author.username }}
+    </h1>
+  </RouterLink>
+
   <p class="text-subtitle-1 text-grey mb-2">
     Uploaded {{ getUploadDate(props.image.createdAt) }} ago
   </p>

@@ -3,6 +3,7 @@ import feedbackController from "@/controllers/feedbackController";
 import { store } from "@/store";
 import getUploadDate from "@/utils/getUploadDate";
 import { onMounted, ref } from "vue";
+import { RouterLink } from "vue-router";
 
 const props = defineProps({
   imageId: String,
@@ -132,15 +133,25 @@ onMounted(async () => {
     v-else-if="comments.length > 0"
     v-for="comment in comments"
     :key="comment._id"
-    class="d-flex mt-2"
+    class="d-flex mt-2 align-start"
   >
-    <v-avatar :image="comment.author.avatar.url" class="mr-2 mb-2"></v-avatar>
+    <RouterLink :to="'/user/' + comment.author.username">
+      <v-avatar
+        :image="comment.author.avatar.url + '?tr=ar-1-1'"
+        class="mr-2 mb-2"
+      ></v-avatar>
+    </RouterLink>
     <v-card variant="outlined" class="flex-grow-1">
       <v-card-text>
         <div class="d-flex">
-          <h4 class="flex-grow-1 mr-1">
-            {{ comment.author.username }}
-          </h4>
+          <RouterLink
+            style="color: black; text-decoration: none"
+            :to="'/user/' + comment.author.username"
+          >
+            <h4 class="flex-grow-1 mr-1">
+              {{ comment.author.username }}
+            </h4>
+          </RouterLink>
           <p class="text-grey text-caption">
             {{ getUploadDate(comment.createdAt) }}
           </p>

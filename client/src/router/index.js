@@ -4,6 +4,7 @@ import LoginView from "@/views/LoginView.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import DashboardView from "@/views/DashboardView.vue";
 import ProfileView from "@/views/ProfileView.vue";
+import UserView from "@/views/UserView.vue";
 import ImageDetailsView from "@/views/ImageDetailsView.vue";
 import { store } from "@/store";
 
@@ -42,13 +43,18 @@ const router = createRouter({
       name: "profile",
       component: ProfileView,
     },
+    {
+      path: "/user/:username",
+      name: "user",
+      component: UserView,
+    },
   ],
 });
 
 router.beforeEach(async (to, from, next) => {
   await store.getCurrentUser();
 
-  const publicRoutes = ["home", "register", "login", "image-details"];
+  const publicRoutes = ["home", "register", "login", "image-details", "user"];
 
   if (!publicRoutes.includes(to.name) && !store.auth.user) {
     next({ name: "login" });

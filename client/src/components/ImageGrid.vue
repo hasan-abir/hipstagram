@@ -63,8 +63,13 @@ onMounted(async () => {
     <h1 class="font-weight-bold mb-12 text-h4 text-sm-h5">Upload an image</h1>
     <UploadImage @image-upload="refreshImages()" />
     <v-divider class="my-4"></v-divider>
-    <h1 class="font-weight-bold mb-12 text-h4 text-sm-h5">Uploaded Images</h1>
   </template>
+  <h1
+    v-if="$route.name !== 'home' && $route.name !== 'image-details'"
+    class="font-weight-bold mb-12 text-h4 text-sm-h5"
+  >
+    Uploaded Images
+  </h1>
   <div class="css-grid">
     <v-hover v-for="image in images" :key="image._id">
       <template v-slot:default="{ isHovering, props }">
