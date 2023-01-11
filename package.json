@@ -12,7 +12,7 @@
     "test": "mocha \"__tests__/**/*.test.js\"",
     "test:unit": "mocha \"__tests__/unit/**/*.test.js\"",
     "test:e2e": "mocha \"__tests__/e2e/**/*.test.js\"",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+    "postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   },
   "keywords": [],
   "author": "",
