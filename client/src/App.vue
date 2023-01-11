@@ -1,23 +1,19 @@
+<script setup>
+import { RouterView } from "vue-router";
+import DynamicNavbar from "@/components/DynamicNavbar.vue";
+import { store } from "@/store";
+</script>
+
 <template>
   <v-app>
-    <router-view></router-view>
+    <v-main>
+      <DynamicNavbar />
+      <v-container>
+        <div v-if="store.auth.loading" class="text-center">
+          <v-progress-circular indeterminate dark></v-progress-circular>
+        </div>
+        <RouterView v-else />
+      </v-container>
+    </v-main>
   </v-app>
 </template>
-
-<script>
-export default {
-  name: "App"
-};
-</script>
-<style>
-.my-container {
-  width: 80%;
-  margin: 0 auto;
-}
-
-@media (max-width: 600px) {
-  .my-container {
-    width: 95%;
-  }
-}
-</style>

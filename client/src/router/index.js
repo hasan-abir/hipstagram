@@ -1,124 +1,71 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
-import Signup from "../views/Signup.vue";
-import Login from "../views/Login.vue";
-import Dashboard from "../views/Dashboard.vue";
-import Profile from "../views/Profile.vue";
-import User from "../views/User.vue";
-import axios from "axios";
-import { keyHeader } from "../headers";
+import { createRouter, createWebHistory } from "vue-router";
+import HomeView from "@/views/HomeView.vue";
+import LoginView from "@/views/LoginView.vue";
+import RegisterView from "@/views/RegisterView.vue";
+import DashboardView from "@/views/DashboardView.vue";
+import ProfileView from "@/views/ProfileView.vue";
+import UserView from "@/views/UserView.vue";
+import ImageDetailsView from "@/views/ImageDetailsView.vue";
+import { store } from "@/store";
 
-Vue.use(VueRouter);
-
-const routes = [
-  {
-    path: "/",
-    name: "home",
-    component: Home,
-  },
-  {
-    path: "/signup",
-    name: "signup",
-    component: Signup,
-    async beforeEnter(to, from, next) {
-      const token = document.cookie.substr(13, document.cookie.length - 2);
-
-      try {
-        await axios.get("/api/auth/verifyuser", {
-          headers: {
-            ...keyHeader,
-            "auth-token": token,
-          },
-        });
-
-        next({
-          path: "/dashboard",
-        });
-      } catch (err) {
-        next();
-      }
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: "/",
+      name: "home",
+      component: HomeView,
+      children: [
+        {
+          path: "/image/:id",
+          name: "image-details",
+          component: ImageDetailsView,
+        },
+      ],
     },
-  },
-  {
-    path: "/login",
-    name: "login",
-    component: Login,
-    async beforeEnter(to, from, next) {
-      const token = document.cookie.substr(13, document.cookie.length - 2);
-
-      try {
-        await axios.get("/api/auth/verifyuser", {
-          headers: {
-            ...keyHeader,
-            "auth-token": token,
-          },
-        });
-
-        next({
-          path: "/dashboard",
-        });
-      } catch (err) {
-        next();
-      }
-      next();
+    {
+      path: "/login",
+      name: "login",
+      component: LoginView,
     },
-  },
-  {
-    path: "/dashboard",
-    name: "dashboard",
-    component: Dashboard,
-    async beforeEnter(to, from, next) {
-      const token = document.cookie.substr(13, document.cookie.length - 2);
-
-      try {
-        await axios.get("/api/auth/verifyuser", {
-          headers: {
-            ...keyHeader,
-            "auth-token": token,
-          },
-        });
-        next();
-      } catch (err) {
-        next({
-          path: "/login",
-        });
-      }
+    {
+      path: "/register",
+      name: "register",
+      component: RegisterView,
     },
-  },
-  {
-    path: "/profile",
-    name: "profile",
-    component: Profile,
-    async beforeEnter(to, from, next) {
-      const token = document.cookie.substr(13, document.cookie.length - 2);
-
-      try {
-        await axios.get("/api/auth/verifyuser", {
-          headers: {
-            ...keyHeader,
-            "auth-token": token,
-          },
-        });
-        next();
-      } catch (err) {
-        next({
-          path: "/login",
-        });
-      }
+    {
+      path: "/dashboard",
+      name: "dashboard",
+      component: DashboardView,
     },
-  },
-  {
-    path: "/user/:id",
-    name: "user",
-    component: User,
-  },
-];
+    {
+      path: "/profile",
+      name: "profile",
+      component: ProfileView,
+    },
+    {
+      path: "/user/:username",
+      name: "user",
+      component: UserView,
+    },
+  ],
+});
 
-const router = new VueRouter({
-  mode: "history",
-  base: process.env.BASE_URL,
-  routes,
+router.beforeEach(async (to, from, next) => {
+  await store.getCurrentUser();
+
+  const publicRoutes = ["home", "register", "login", "image-details", "user"];
+
+  if (!publicRoutes.includes(to.name) && !store.auth.user) {
+    next({ name: "login" });
+  } else if (
+    (to.name === "register" || to.name === "login") &&
+    store.auth.user
+  ) {
+    next({ name: "home" });
+  } else {
+    next();
+  }
 });
 
 export default router;

@@ -2,32 +2,38 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const imageSchema = new Schema({
-  image: {
-    url: {
-      type: String,
-      required: true
+const imageSchema = new Schema(
+  {
+    file: {
+      url: {
+        type: String,
+      },
+      fileId: {
+        type: String,
+      },
     },
-    fileId: {
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    caption: {
       type: String,
-      required: true
-    }
+      default: "",
+    },
+    likes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Like",
+      },
+    ],
+    comments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
   },
-  userId: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String
-  },
-  likes: {
-    type: Number,
-    required: true
-  },
-  created: {
-    type: Date,
-    default: Date.now
-  }
-});
+  { timestamps: true }
+);
 
-module.exports = User = mongoose.model("image", imageSchema);
+module.exports = Image = mongoose.model("Image", imageSchema);

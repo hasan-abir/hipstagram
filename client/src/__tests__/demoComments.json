@@ -1,0 +1,47 @@
+{
+  "comments": [
+    {
+      "_id": "63ab09abe3ddd45e0f641095",
+      "text": "Thanks\n",
+      "author": {
+        "avatar": {
+          "url": "https://ik.imagekit.io/ozjxi1bzek/hipstagram_users/male_ZkJR1ReV5.jpg",
+          "fileId": "male"
+        },
+        "username": "Hasan Abir"
+      },
+      "createdAt": "2022-12-27T15:05:15.395Z",
+      "updatedAt": "2022-12-27T15:05:15.395Z",
+      "__v": 0
+    },
+    {
+      "_id": "63ab0998e3ddd45e0f641077",
+      "text": "Love the shirt",
+      "author": {
+        "avatar": {
+          "url": "https://ik.imagekit.io/ozjxi1bzek/hipstagram_users/neutral_zjoy3r1r6b.jpg",
+          "fileId": "unknown"
+        },
+        "username": "Jonathan Richman"
+      },
+      "createdAt": "2022-12-27T15:04:56.223Z",
+      "updatedAt": "2022-12-27T15:04:56.223Z",
+      "__v": 0
+    },
+    {
+      "_id": "63a9397619cea051e5cba45b",
+      "text": "Shocking",
+      "author": {
+        "avatar": {
+          "url": "https://ik.imagekit.io/ozjxi1bzek/hipstagram_users/male_ZkJR1ReV5.jpg",
+          "fileId": "male"
+        },
+        "username": "Hasan Abir"
+      },
+      "createdAt": "2022-12-26T06:04:38.065Z",
+      "updatedAt": "2022-12-26T06:04:38.065Z",
+      "__v": 0
+    }
+  ],
+  "next": "2022-12-19T05:52:41.597Z"
+}
