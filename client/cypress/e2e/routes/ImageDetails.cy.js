@@ -2,6 +2,46 @@ import demoImages from "../../../src/__tests__/demoImages.json";
 import demoComments from "../../../src/__tests__/demoComments.json";
 
 describe("Image Details route", () => {
+  it("press esc button", () => {
+    const author = {
+      avatar: {
+        url: "https://ik.imagekit.io/ozjxi1bzek/hipstagram_users/male_ZkJR1ReV5.jpg",
+        fileId: "male",
+      },
+      username: "Hasan Abir",
+      gender: "male",
+      email: "hasanabir@test.com",
+      createdAt: "2022-12-19T05:09:48.031Z",
+      updatedAt: "2022-12-19T05:09:48.031Z",
+    };
+
+    cy.intercept("GET", "/api/auth/currentuser", {
+      statusCode: 200,
+      body: author,
+    });
+    localStorage.setItem("jwtToken", "123");
+    cy.intercept("GET", "/api/images/latest?limit=10", {
+      statusCode: 200,
+      body: demoImages,
+    });
+
+    const imageDetail = { ...demoImages.images[0] };
+    imageDetail.author = author;
+    cy.intercept("GET", "/api/images/details/" + demoImages.images[0]._id, {
+      statusCode: 200,
+      body: imageDetail,
+    });
+
+    cy.visit("/image/" + demoImages.images[0]._id);
+
+    cy.get("body").type("{esc}");
+
+    cy.url().should("include", "/");
+
+    cy.get("body").type("{esc}");
+
+    cy.url().should("include", "/");
+  });
   it("visits, deletes comment", () => {
     const author = {
       avatar: {

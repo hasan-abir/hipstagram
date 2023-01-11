@@ -293,6 +293,94 @@ describe("ImagesController", () => {
 
       await imageKit.deleteFile(savedImage.file.fileId);
     });
+    it("should upload the image in png", async function () {
+      this.timeout(20000);
+      // given
+      const reqBody = { caption: "Lorem ipsum" };
+      const reqFile = fs.readFileSync(
+        path.resolve(__dirname, "..", "..", "test_images", "goodpng.png")
+      );
+      const token = await jwtGenerateToken({
+        username: "Hasan Abir",
+        email: "hasanabir@test.com",
+      });
+
+      // when
+      const res = await chai
+        .request(app)
+        .post("/api/images/upload")
+        .set("x-api-key", process.env.API_KEY)
+        .set("authorization", "Bearer " + token)
+        .set("content-type", "multipart/form-data")
+        .field("caption", reqBody.caption)
+        .attach("file", reqFile, "goodpng.png");
+
+      // then
+      expect(res).to.have.status(200);
+      expect(res.body.hasOwnProperty("_id")).to.equal(true);
+      expect(res.body.file.hasOwnProperty("fileId")).to.equal(true);
+      expect(res.body.file.hasOwnProperty("url")).to.equal(true);
+      expect(res.body.author.hasOwnProperty("username")).to.equal(true);
+      expect(res.body.author.hasOwnProperty("avatar")).to.equal(true);
+      expect(res.body.author.hasOwnProperty("_id")).to.equal(false);
+      expect(res.body.caption).to.equal(reqBody.caption);
+      expect(
+        res.body.hasOwnProperty("likes") &&
+          res.body.hasOwnProperty("comments") &&
+          res.body.hasOwnProperty("_v")
+      ).to.equal(false);
+
+      const imageUploaded = await Image.exists({ caption: reqBody.caption });
+      expect(imageUploaded.hasOwnProperty("_id")).to.equal(true);
+
+      const savedImage = await Image.findById(res.body._id);
+
+      await imageKit.deleteFile(savedImage.file.fileId);
+    });
+    it("should upload the image in webp", async function () {
+      this.timeout(20000);
+      // given
+      const reqBody = { caption: "Lorem ipsum" };
+      const reqFile = fs.readFileSync(
+        path.resolve(__dirname, "..", "..", "test_images", "goodwebp.webp")
+      );
+      const token = await jwtGenerateToken({
+        username: "Hasan Abir",
+        email: "hasanabir@test.com",
+      });
+
+      // when
+      const res = await chai
+        .request(app)
+        .post("/api/images/upload")
+        .set("x-api-key", process.env.API_KEY)
+        .set("authorization", "Bearer " + token)
+        .set("content-type", "multipart/form-data")
+        .field("caption", reqBody.caption)
+        .attach("file", reqFile, "goodwebp.webp");
+
+      // then
+      expect(res).to.have.status(200);
+      expect(res.body.hasOwnProperty("_id")).to.equal(true);
+      expect(res.body.file.hasOwnProperty("fileId")).to.equal(true);
+      expect(res.body.file.hasOwnProperty("url")).to.equal(true);
+      expect(res.body.author.hasOwnProperty("username")).to.equal(true);
+      expect(res.body.author.hasOwnProperty("avatar")).to.equal(true);
+      expect(res.body.author.hasOwnProperty("_id")).to.equal(false);
+      expect(res.body.caption).to.equal(reqBody.caption);
+      expect(
+        res.body.hasOwnProperty("likes") &&
+          res.body.hasOwnProperty("comments") &&
+          res.body.hasOwnProperty("_v")
+      ).to.equal(false);
+
+      const imageUploaded = await Image.exists({ caption: reqBody.caption });
+      expect(imageUploaded.hasOwnProperty("_id")).to.equal(true);
+
+      const savedImage = await Image.findById(res.body._id);
+
+      await imageKit.deleteFile(savedImage.file.fileId);
+    });
     it("should return error when image is not provided", async () => {
       // given
       const token = await jwtGenerateToken({
@@ -360,7 +448,7 @@ describe("ImagesController", () => {
       // then
       expect(res).to.have.status(400);
       expect(res.body.msg).to.equal(
-        "Only .jpg or .png file types are accepted"
+        "Only .jpg, .png or .webp file types are accepted"
       );
     });
   });

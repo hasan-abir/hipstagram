@@ -15,7 +15,7 @@ const props = defineProps({
     :to="'/user/' + props.image.author.username"
   >
     <v-avatar
-      :image="props.image.author.avatar.url + '?tr=ar-1-1'"
+      :image="props.image.author.avatar.url + '?tr=ar-1-1,w-40'"
       class="mr-4 mb-2"
     ></v-avatar>
     <h1 class="d-inline text-h5 text-sm-h6">

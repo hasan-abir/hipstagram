@@ -232,6 +232,76 @@ describe("AuthController", () => {
 
       await imageKit.deleteFile(savedUser.avatar.fileId);
     });
+    it("should register the user with png avatar", async function () {
+      this.timeout(20000);
+
+      // given
+      const reqBody = {
+        username: "Hasan Abir",
+        gender: "male",
+        email: "hasanabir@test.com",
+        password: "testtest",
+      };
+
+      const reqFile = fs.readFileSync(
+        path.resolve(__dirname, "..", "..", "test_images", "goodpng.png")
+      );
+
+      // when
+      const res = await chai
+        .request(app)
+        .post("/api/auth/register")
+        .set("x-api-key", process.env.API_KEY)
+        .set("content-type", "multipart/form-data")
+        .field("username", reqBody.username)
+        .field("gender", reqBody.gender)
+        .field("email", reqBody.email)
+        .field("password", reqBody.password)
+        .attach("avatar", reqFile, "goodpng.png");
+
+      // then
+      expect(res).to.have.status(200);
+      expect(res.body.hasOwnProperty("token")).to.equal(true);
+
+      const savedUser = await User.findOne({ email: reqBody.email });
+
+      await imageKit.deleteFile(savedUser.avatar.fileId);
+    });
+    it("should register the user with webp avatar", async function () {
+      this.timeout(20000);
+
+      // given
+      const reqBody = {
+        username: "Hasan Abir",
+        gender: "male",
+        email: "hasanabir@test.com",
+        password: "testtest",
+      };
+
+      const reqFile = fs.readFileSync(
+        path.resolve(__dirname, "..", "..", "test_images", "goodwebp.webp")
+      );
+
+      // when
+      const res = await chai
+        .request(app)
+        .post("/api/auth/register")
+        .set("x-api-key", process.env.API_KEY)
+        .set("content-type", "multipart/form-data")
+        .field("username", reqBody.username)
+        .field("gender", reqBody.gender)
+        .field("email", reqBody.email)
+        .field("password", reqBody.password)
+        .attach("avatar", reqFile, "goodwebp.webp");
+
+      // then
+      expect(res).to.have.status(200);
+      expect(res.body.hasOwnProperty("token")).to.equal(true);
+
+      const savedUser = await User.findOne({ email: reqBody.email });
+
+      await imageKit.deleteFile(savedUser.avatar.fileId);
+    });
     it("should return error when password has less than 8 chars", async () => {
       // given
       const reqBody = {
@@ -396,7 +466,7 @@ describe("AuthController", () => {
       // then
       expect(res).to.have.status(400);
       expect(res.body.msg).to.equal(
-        "Only .jpg or .png file types are accepted"
+        "Only .jpg, .png or .webp file types are accepted"
       );
     });
     it("should return error if the username is already registered", async function () {

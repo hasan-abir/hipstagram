@@ -125,7 +125,7 @@ const submitForm = async () => {
         <v-file-input
           v-model="avatar"
           :rules="avatar.length > 0 ? avatarRules : []"
-          accept="image/png, image/jpeg, image/jpg"
+          accept="image/png, image/jpeg, image/jpg, image/webp"
           placeholder="Upload an avatar (optional)"
           prepend-icon="mdi-camera"
           label="Avatar"

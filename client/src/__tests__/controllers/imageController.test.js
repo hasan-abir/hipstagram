@@ -9,7 +9,7 @@ function FormDataMock() {
 
 global.FormData = FormDataMock;
 
-describe("AuthController", () => {
+describe("ImageController", () => {
   beforeAll(() => {
     vi.mock("axios");
   });
@@ -83,9 +83,6 @@ describe("AuthController", () => {
       expect(result).toBe(response.data);
       expect(axios.post).toBeCalledTimes(1);
       expect(axios.post.mock.calls[0][0]).toBe("/api/images/upload");
-      console.log({
-        headers: { ...keyHeader, authorization: "Bearer " + token },
-      });
       expect(axios.post.mock.calls[0][2]).toStrictEqual({
         headers: { ...keyHeader, authorization: "Bearer " + token },
       });

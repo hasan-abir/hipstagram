@@ -22,7 +22,7 @@ module.exports = (appInstance) => {
     if (err instanceof multer.MulterError && err.code === "LIMIT_FILE_TYPE") {
       return res
         .status(400)
-        .json({ msg: "Only .jpg or .png file types are accepted" });
+        .json({ msg: "Only .jpg, .png or .webp file types are accepted" });
     }
 
     if (err.statusCode && err.message) {

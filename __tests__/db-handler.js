@@ -12,7 +12,9 @@ const connect = async () => {
     useUnifiedTopology: true,
   };
 
-  await mongoose.connect(uri, mongooseOpts);
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(uri, mongooseOpts);
+  }
 
   return mongod;
 };

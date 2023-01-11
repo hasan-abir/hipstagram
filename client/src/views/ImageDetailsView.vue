@@ -1,8 +1,8 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import imageController from "@/controllers/imageController";
 import ImageFeedback from "@/components/ImageFeedback.vue";
+import imageController from "@/controllers/imageController";
+import { onMounted, ref, onUnmounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
 
 const router = useRouter();
@@ -23,7 +23,15 @@ const closeDetails = () => {
   }
 };
 
+const onKeyDown = (e) => {
+  if (e.key === "Escape") {
+    closeDetails();
+  }
+};
+
 onMounted(async () => {
+  document.addEventListener("keydown", onKeyDown);
+
   try {
     loading.value = true;
 
@@ -38,6 +46,10 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", onKeyDown);
+});
 </script>
 
 <template>
@@ -45,6 +57,7 @@ onMounted(async () => {
     v-model="overlay"
     theme="light"
     @click:outside="closeDetails()"
+    :close-on-back="false"
     class="align-center justify-center"
     content-class="w-100 h-100 pointer-events-none d-flex align-center"
   >

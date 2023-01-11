@@ -1,8 +1,8 @@
+import router from "@/router";
 import UserView from "@/views/UserView.vue";
 import UserProfile from "@/components/UserProfile.vue";
 import authController from "@/controllers/authController";
 import vuetify from "@/plugins/vuetify";
-import router from "@/router";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";

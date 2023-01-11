@@ -9,7 +9,7 @@ const props = defineProps({
 <template>
   <div v-if="props.user" class="d-flex align-center">
     <v-avatar
-      :image="props.user.avatar.url + '?tr=ar-1-1'"
+      :image="props.user.avatar.url + '?tr=ar-1-1,w-60'"
       class="mr-4 mb-2"
       size="60"
     ></v-avatar>

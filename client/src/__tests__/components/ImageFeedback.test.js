@@ -1,13 +1,11 @@
 import ImageFeedback from "@/components/ImageFeedback.vue";
-import ImageComment from "@/components/ImageComment.vue";
-import ImageLike from "@/components/ImageLike.vue";
 import vuetify from "@/plugins/vuetify";
+import router from "@/router";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import demoImages from "../demoImages.json";
-import router from "@/router";
 
-describe.only("ImageFeedback", () => {
+describe("ImageFeedback", () => {
   it("renders correctly", async () => {
     // when
     const image = { ...demoImages.images[0] };

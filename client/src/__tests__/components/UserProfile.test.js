@@ -2,9 +2,8 @@ import UserProfile from "@/components/UserProfile.vue";
 import vuetify from "@/plugins/vuetify";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
-import router from "@/router";
 
-describe.only("UserProfile", () => {
+describe("UserProfile", () => {
   it("renders correctly", async () => {
     // when
     const user = {
@@ -31,7 +30,9 @@ describe.only("UserProfile", () => {
     // then
     const images = await wrapper
       .findAll("img")
-      .filter((el) => el.attributes("src") === user.avatar.url + "?tr=ar-1-1");
+      .filter(
+        (el) => el.attributes("src") === user.avatar.url + "?tr=ar-1-1,w-60"
+      );
 
     expect(wrapper.text()).toContain(user.username);
     expect(images.length).toBeGreaterThan(0);

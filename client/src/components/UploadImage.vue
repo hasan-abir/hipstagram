@@ -40,6 +40,9 @@ const uploadImage = async () => {
       setTimeout(() => {
         success.value = false;
       }, 5000);
+
+      image.value = [];
+      form.reset();
     } catch (err) {
       error.value = {
         body: err.response ? err.response.data : null,
@@ -85,7 +88,7 @@ const uploadImage = async () => {
         <v-file-input
           v-model="image"
           :rules="imageRules"
-          accept="image/png, image/jpeg, image/jpg"
+          accept="image/png, image/jpeg, image/jpg, image/webp"
           prepend-icon="mdi-camera"
           variant="underlined"
           label="Image"

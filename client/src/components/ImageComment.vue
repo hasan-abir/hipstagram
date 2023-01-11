@@ -137,7 +137,7 @@ onMounted(async () => {
   >
     <RouterLink :to="'/user/' + comment.author.username">
       <v-avatar
-        :image="comment.author.avatar.url + '?tr=ar-1-1'"
+        :image="comment.author.avatar.url + '?tr=ar-1-1,w-40'"
         class="mr-2 mb-2"
       ></v-avatar>
     </RouterLink>
@@ -153,7 +153,7 @@ onMounted(async () => {
             </h4>
           </RouterLink>
           <p class="text-grey text-caption">
-            {{ getUploadDate(comment.createdAt) }}
+            {{ getUploadDate(comment.createdAt) }} ago
           </p>
         </div>
 

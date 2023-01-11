@@ -19,7 +19,7 @@ const drawer = ref(null);
     <v-list density="compact" nav :disabled="store.auth.loading">
       <template v-if="store.auth.user">
         <v-list-item
-          :prepend-avatar="store.auth.user.avatar.url"
+          :prepend-avatar="store.auth.user.avatar.url + '?tr=ar-1-1,w-32'"
           :title="store.auth.user.username"
         ></v-list-item>
         <v-list-item
