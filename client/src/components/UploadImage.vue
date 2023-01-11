@@ -42,7 +42,7 @@ const uploadImage = async () => {
       }, 5000);
 
       image.value = [];
-      form.reset();
+      caption.value = "";
     } catch (err) {
       error.value = {
         body: err.response ? err.response.data : null,
