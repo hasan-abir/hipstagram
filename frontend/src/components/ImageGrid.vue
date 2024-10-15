@@ -83,9 +83,12 @@ onMounted(async () => {
       </template>
     </v-hover>
   </div>
-  <v-row class="mx-0" justify="center" v-if="loading">
+  <v-col class="mx-0" align="center" v-if="loading">
+    <p class="mb-1">
+      It might take up to a minute for the backend to "wake up"
+    </p>
     <v-progress-circular indeterminate dark class="my-6"></v-progress-circular>
-  </v-row>
+  </v-col>
   <p v-else-if="images.length === 0">No images uploaded... yet</p>
 
   <v-row class="mx-0" justify="center" v-if="nextImage">
