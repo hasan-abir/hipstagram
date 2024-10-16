@@ -2,4 +2,4 @@
 
 An image based site just like Instagram that lets user upload images and share feedbacks.
 
-Live demo - https://hipstagram.onrender.com/
+Live demo - https://hipstagram-client.netlify.app/
