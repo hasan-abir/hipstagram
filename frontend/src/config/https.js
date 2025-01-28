@@ -6,12 +6,27 @@ export default () => {
     function (response) {
       return response;
     },
-    function (error) {
+    async function (error) {
+      const originalRequest = error.config;
+
       if (error.response.status === 401) {
         store.logout();
-      } else {
-        return Promise.reject(error);
+      } else if (error.response.status === 503) {
+        if (!originalRequest.__retryCount) {
+          originalRequest.__retryCount = 0;
+        }
+
+        if (originalRequest.__retryCount < 2) {
+          originalRequest.__retryCount += 1;
+
+          const delay = new Promise((resolve) => setTimeout(resolve, 3000));
+          await delay;
+
+          return axios(originalRequest);
+        }
       }
+
+      return Promise.reject(error);
     }
   );
 };
